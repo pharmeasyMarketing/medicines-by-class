@@ -231,3 +231,4 @@ For several medicines in this class the day of the cycle on which you take them 
 **Check the strength and dosage form** on your prescription before ordering.
 **Tell your doctor about allergies** and about every other medicine or supplement you take.
 **Do not stop a prescribed medicine** without medical advice, even if you feel better.",,,,2026-07-24,2026-07-24,,FALSE,draft
+sarthak-test,Sarthak Test Class | PharmEasy,Temporary test page used to confirm the Google Sheet is driving the static build.,"This page exists only to confirm that the Google Sheet is the source of truth. If you can read this, the sheet drove the build.",About this test,"Added as a row in the classes tab, with ten medicines attached in the medicines tab. Delete the row and the page disappears on the next run.",,,Prescription and dosage,Not a real medicine class. Do not publish.,**Do not self-medicate.** Use medicines only as advised by a qualified doctor.,,,,2026-07-27,2026-07-27,,TRUE,draft

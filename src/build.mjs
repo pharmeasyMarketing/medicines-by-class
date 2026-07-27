@@ -399,6 +399,16 @@ classes = classes.filter(c => live.has(c.class_id));
 const byId = Object.fromEntries(classes.map(c => [c.class_id, c]));
 const countOf = c => medsByClass[c.class_id]?.length || 0;
 
+/* Shared with assets/app.js -- keep the two in step or the price will jump
+   when the live call lands. */
+function priceWithExtra(mrp, apiSale, apiPct) {
+  if (!isFinite(mrp) || mrp <= 0 || !isFinite(apiSale) || apiSale <= 0) return { sale: NaN, off: 0 };
+  let pct = Number(apiPct);
+  if (!isFinite(pct)) pct = (1 - apiSale / mrp) * 100;   // derive if absent
+  const off = Math.min(95, Math.round(pct + CFG.extraOffPct));
+  return { sale: mrp * (1 - off / 100), off };
+}
+
 /* ================================================================ cards == */
 function medCard(m) {
   // Commercial state comes from the dynamic API and nothing else. The
@@ -407,10 +417,10 @@ function medCard(m) {
   const snap = snapshot[m.sku];
   const mrp = snap ? parseFloat(snap.mrp) : NaN;
   const apiSale = snap ? parseFloat(snap.sale) : NaN;
-  // the standing extra discount is applied on top of the API sale price
-  const sale = isFinite(apiSale) ? apiSale * (1 - CFG.extraOffPct / 100) : NaN;
+  // The extra is ADDITIVE on the API's own discount percentage, then taken off
+  // MRP -- so 10% + 15 = 25% off MRP, not 0.90 x 0.85 (which would be 23.5%).
+  const { sale, off } = priceWithExtra(mrp, apiSale, snap && snap.pct);
   const hasPrice = isFinite(sale) && sale > 0;
-  const off = hasPrice && isFinite(mrp) && mrp > sale ? Math.round((1 - sale / mrp) * 100) : 0;
   // tier 1 = "We do not sell this product" -> never merchandise it
   const tierType = snap && snap.tierType != null ? snap.tierType : null;
   const discontinued = /discontinu/i.test((snap && snap.tierText) || "");
@@ -647,10 +657,11 @@ function buildClass(cl) {
   // class-wide, so paginating would mean a chip promising 26 results showing
   // none; and the full list being crawlable is the point of the page. The
   // browser reveals CFG.perPage at a time and only prices what is on screen.
+  const noindex = bool(c.noindex);
   const dir = cl.slug;
   const canonical = `${CFG.origin}${CFG.base}/${dir}/`;
   const suffix = "";
-  const head = "";
+  const head = noindex ? '<meta name="robots" content="noindex,follow">' : "";
   const slice = all;
   const outs = [];
 
@@ -845,7 +856,7 @@ ${footer()}`;
           acceptedAnswer: { "@type": "Answer", text: f.answer_md } })) }] : []),
     ])];
 
-    outs.push({ dir, canonical, indexable: true });
+    outs.push({ dir, canonical, indexable: !noindex });
     write(`${dir}/index.html`, page({
       title: (c.meta_title || `${cl.class_name} | PharmEasy`) + suffix,
       desc: c.meta_description || "", canonical, jsonld, body, extraHead: head,

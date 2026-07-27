@@ -849,10 +849,15 @@
     function paint(card, d) {
       card.classList.remove("is-loading");
       var mrp  = parseFloat(d.costPrice);
-      // the standing extra discount is applied on top of the API sale price,
-      // exactly as the build does, so hydration never changes the number shown
+      var apiSale = parseFloat(d.salePrice);
+      // ADDITIVE on the API's discountPercent, off MRP -- identical to the
+      // build, so hydration never changes the number on screen.
       var extra = Number(cfg.extraOffPct) || 0;
-      var sale = parseFloat(d.salePrice) * (1 - extra / 100);
+      var pct = parseFloat(d.discountPercent);
+      if (!isFinite(pct) && isFinite(mrp) && isFinite(apiSale) && mrp > 0)
+        pct = (1 - apiSale / mrp) * 100;
+      var offPct = Math.min(95, Math.round(pct + extra));
+      var sale = (isFinite(mrp) && mrp > 0 && isFinite(offPct)) ? mrp * (1 - offPct / 100) : NaN;
       var avail = d.isAvailable === true;
 
       var priceEl = $(".price", card), mrpEl = $(".mrp", card),
@@ -865,7 +870,7 @@
         if (isFinite(mrp) && mrp > sale) {
           mrpEl.textContent = rupee(mrp);
           mrpEl.hidden = false;
-          var off = Math.round((1 - sale / mrp) * 100);
+          var off = offPct;
           card.dataset.off = String(off);
           if (off > 0) { offEl.textContent = off + "% OFF"; offEl.classList.add("on"); }
           saveEl.textContent = "You save " + rupee(mrp - sale);

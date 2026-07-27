@@ -58,6 +58,7 @@ async function one(sku) {
       if (!r.ok) throw new Error("HTTP " + r.status);
       const d = await r.json();
       const sale = parseFloat(d.salePrice), mrp = parseFloat(d.costPrice);
+      const pct = parseFloat(d.discountPercent);
       const v = (d.variants && d.variants[0]) || {};
       // productTierAttributes carries the exact commercial state:
       //   type 5 = live  |  type 2 = out of stock / discontinued  |  type 1 = not sold
@@ -65,6 +66,7 @@ async function one(sku) {
       return {
         sale: isFinite(sale) && sale > 0 ? sale : null,
         mrp: isFinite(mrp) && mrp > 0 ? mrp : null,
+        pct: isFinite(pct) ? pct : null,
         avail: d.isAvailable === true,
         subst: !!(d.productSubstitutionAttributes && d.productSubstitutionAttributes.count > 0),
         // cart/addToCart needs productType alongside productId
