@@ -40,10 +40,10 @@ jobs:
         run: |
           node src/validate.mjs
           node src/build.mjs
-          # Pages serves the repo root, so nest the site under its base path
-          mkdir -p _site/medicines-by-class
-          cp -R dist/. _site/medicines-by-class/
-          printf '<meta http-equiv="refresh" content="0; url=/medicines-by-class/">' > _site/index.html
+          # The repo is NAMED medicines-by-class, so Pages already serves it at
+          # /medicines-by-class/ -- nesting again would double the path.
+          mkdir -p _site
+          cp -R dist/. _site/
           touch _site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
