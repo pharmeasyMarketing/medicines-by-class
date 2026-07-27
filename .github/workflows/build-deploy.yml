@@ -89,6 +89,12 @@ jobs:
           KNOWN:    ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
           set -euo pipefail
+          # Optional target. Without the secrets there is nothing to rsync to,
+          # and failing here would skip the repo publish that follows.
+          if [ -z "${HOST:-}" ] || [ -z "${USER:-}" ] || [ -z "${DEST:-}" ]; then
+            echo "DEPLOY_* secrets not set — skipping rsync (the build is still published to the repo)"
+            exit 0
+          fi
           mkdir -p ~/.ssh
           printf '%s' "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
