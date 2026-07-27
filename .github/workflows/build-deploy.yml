@@ -1,5 +1,12 @@
 name: Build and deploy Medicines by Class
 
+# ONE run does everything: read the sheet once, price once, then emit both
+# outputs from that same data —
+#   * production build  -> repo medicines-by-class/  (+ optional CyberPanel rsync)
+#   * preview build     -> GitHub Pages
+# Two separate workflows meant two sheet reads and two snapshots that could
+# disagree with each other.
+
 on:
   schedule:
     - cron: "30 20 * * *"        # 02:00 IST nightly
@@ -8,14 +15,16 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["src/**", "assets/**", "sheets/**"]
+    paths: ["src/**", "assets/**", "sheets/**", ".github/workflows/build-deploy.yml"]
+
+permissions:
+  contents: write        # commit the build back into the repo
+  pages: write
+  id-token: write
 
 concurrency:
   group: mbc-deploy
   cancel-in-progress: false
-
-permissions:
-  contents: write        # needed to commit the build back into the repo
 
 jobs:
   build:
@@ -23,15 +32,10 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with: { node-version: "20" }
 
-      # ------------------------------------------------------------------
-      # 1. pull every tab out of the one Google Sheet. Tabs are fetched by
-      #    name; the script refuses to overwrite a tab that lost >50% of its
-      #    rows, so a half-saved edit cannot wipe the site.
-      # ------------------------------------------------------------------
+      # ---- 1. the sheet is the source of truth -------------------------
       - name: Fetch sheet tabs
         env:
           SHEET_ID: ${{ vars.SHEET_ID || secrets.SHEET_ID }}
@@ -41,16 +45,14 @@ jobs:
       - name: Validate sheets
         run: node src/validate.mjs
 
-      # ------------------------------------------------------------------
-      # 2. price snapshot. Aborts if >20% of lookups fail, so a bad API day
-      #    never publishes a grid full of blanks.
-      # ------------------------------------------------------------------
+      # ---- 2. one snapshot, shared by both builds ----------------------
       - name: Snapshot prices
         env:
           PRICE_API: ${{ secrets.PRICE_API_TEMPLATE || 'https://api.pharmeasy.in/v5/product-details/{id}/dynamic' }}
         run: node src/snapshot.mjs --concurrency 10
 
-      - name: Build
+      # ---- 3. production build ------------------------------------------
+      - name: Build (production)
         env:
           SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://pharmeasy.in' }}
           SITE_BASE:   ${{ vars.SITE_BASE   || '/medicines-by-class' }}
@@ -58,10 +60,6 @@ jobs:
           PRICE_API:   ${{ vars.PUBLIC_PRICE_API || 'https://api.pharmeasy.in/v5/product-details/{id}/dynamic' }}
         run: node src/build.mjs
 
-      # ------------------------------------------------------------------
-      # 3. only ship what changed. Rewriting every file nightly would give
-      #    every page a fresh sitemap lastmod even when nothing changed.
-      # ------------------------------------------------------------------
       - name: Diff against last deploy
         id: diff
         run: |
@@ -70,8 +68,7 @@ jobs:
             changed=$(node -e '
               const a=require("./.deploy-manifest.json"), b=require("./dist/manifest.json");
               const keys=new Set([...Object.keys(a),...Object.keys(b)]);
-              const d=[...keys].filter(k=>a[k]!==b[k]);
-              console.log(d.length);
+              console.log([...keys].filter(k=>a[k]!==b[k]).length);
             ')
           else
             changed=all
@@ -80,44 +77,33 @@ jobs:
           echo "pages changed: $changed"
 
       - name: Deploy to CyberPanel
-        if: steps.diff.outputs.changed != '0'
         env:
-          SSH_KEY:  ${{ secrets.DEPLOY_SSH_KEY }}
-          HOST:     ${{ secrets.DEPLOY_HOST }}
-          USER:     ${{ secrets.DEPLOY_USER }}
-          DEST:     ${{ secrets.DEPLOY_PATH }}
-          KNOWN:    ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          HOST:    ${{ secrets.DEPLOY_HOST }}
+          USER:    ${{ secrets.DEPLOY_USER }}
+          DEST:    ${{ secrets.DEPLOY_PATH }}
+          KNOWN:   ${{ secrets.DEPLOY_KNOWN_HOSTS }}
         run: |
           set -euo pipefail
           # Optional target. Without the secrets there is nothing to rsync to,
-          # and failing here would skip the repo publish that follows.
+          # and failing here would skip everything that follows.
           if [ -z "${HOST:-}" ] || [ -z "${USER:-}" ] || [ -z "${DEST:-}" ]; then
-            echo "DEPLOY_* secrets not set — skipping rsync (the build is still published to the repo)"
+            echo "DEPLOY_* secrets not set — skipping rsync (build still published to the repo)"
             exit 0
           fi
           mkdir -p ~/.ssh
           printf '%s' "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           printf '%s\n' "$KNOWN" > ~/.ssh/known_hosts
-          rsync -az --delete \
-            --exclude 'manifest.json' \
-            -e "ssh -i ~/.ssh/id_ed25519" \
-            dist/ "$USER@$HOST:$DEST/"
+          rsync -az --delete --exclude 'manifest.json' \
+            -e "ssh -i ~/.ssh/id_ed25519" dist/ "$USER@$HOST:$DEST/"
 
-      # ------------------------------------------------------------------
-      # 4. commit the built site back into the repo under medicines-by-class/
-      #    so the static files are version-controlled and pullable from
-      #    anywhere, independent of the rsync target.
-      # ------------------------------------------------------------------
       - name: Publish build into medicines-by-class/
-        if: steps.diff.outputs.changed != '0'
         run: |
           set -euo pipefail
-          rm -rf medicines-by-class
-          mkdir -p medicines-by-class
+          rm -rf medicines-by-class && mkdir -p medicines-by-class
           cp -R dist/. medicines-by-class/
           cp dist/manifest.json .deploy-manifest.json
-
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -f medicines-by-class .deploy-manifest.json sheets/
@@ -128,9 +114,30 @@ jobs:
             git push
           fi
 
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: dist
-          path: dist/
-          retention-days: 7
+      # ---- 4. preview build, from the SAME sheet + snapshot -------------
+      - name: Build (GitHub Pages preview)
+        env:
+          SITE_ORIGIN: https://pharmeasymarketing.github.io
+          SITE_BASE:   /medicines-by-class
+          ASSET_BASE:  /medicines-by-class/assets
+        run: |
+          set -euo pipefail
+          node src/build.mjs
+          # the repo is NAMED medicines-by-class, so Pages already serves it
+          # at that path — nesting again would double it
+          rm -rf _site && mkdir -p _site
+          cp -R dist/. _site/
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+
+  deploy-pages:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
