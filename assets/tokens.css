@@ -1,0 +1,131 @@
+/* ============================================================
+   PharmEasy Design System – Colors & Type
+   Primary brand teal verified from logo: rgb(0,136,128) = #008880
+   Font: Mulish (Google Fonts) substituted for PharmEasy's
+   proprietary brand sans – see README "Typography" note.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+:root {
+  /* ---------- BRAND : TEAL (primary) ---------- */
+  --teal-900: #004D48;
+  --teal-800: #005A54;
+  --teal-700: #00736C;   /* hover / pressed primary */
+  --teal-600: #008880;   /* PRIMARY brand color */
+  --teal-500: #1A998F;
+  --teal-300: #7FC4BF;
+  --teal-200: #B8DEDB;
+  --teal-100: #E6F3F2;   /* soft fill / chip bg */
+  --teal-50:  #F2F9F8;   /* tinted section bg */
+
+  /* ---------- ACCENT : CORAL (offers / urgency) ---------- */
+  --coral-700: #E0512F;
+  --coral-600: #FF6B57;  /* sale tags, urgency CTAs */
+  --coral-100: #FFEDE9;
+
+  /* ---------- DISCOUNT / SAVINGS GREEN ---------- */
+  --save-600: #1BA672;   /* "you save" / in-stock green */
+  --save-100: #E3F6EE;
+
+  /* ---------- NEUTRALS (cool slate) ---------- */
+  --ink:    #1C1F22;
+  --fg-1:   #25282B;     /* primary text */
+  --fg-2:   #5C636D;     /* secondary text */
+  --fg-3:   #8E97A3;     /* muted / placeholder */
+  --line:   #E6E9ED;     /* hairline borders */
+  --line-2: #F0F2F4;     /* faint dividers */
+  --surface:#FFFFFF;     /* cards */
+  --bg:     #F5F7F8;     /* page background */
+  --bg-warm:#FFF8F0;     /* warm promo background */
+
+  /* ---------- SEMANTIC STATUS ---------- */
+  --success: #1BA672;
+  --success-bg: #E3F6EE;
+  --warning: #F5A623;
+  --warning-bg: #FEF3E1;
+  --error:   #E5453A;
+  --error-bg: #FCE9E8;
+  --info:    #2F80ED;
+  --info-bg: #E8F1FD;
+
+  /* ---------- ROLE TOKENS ---------- */
+  --color-primary:        var(--teal-600);
+  --color-primary-hover:  var(--teal-700);
+  --color-primary-press:  var(--teal-800);
+  --color-on-primary:     #FFFFFF;
+  --color-accent:         var(--coral-600);
+  --text-strong:          var(--fg-1);
+  --text-default:         var(--fg-2);
+  --text-muted:           var(--fg-3);
+  --border-default:       var(--line);
+
+  /* ---------- TYPOGRAPHY ---------- */
+  --font-sans: 'Mulish', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* type scale (px) – mobile-first health commerce */
+  --fs-display: 40px;  --lh-display: 48px;  --fw-display: 800;
+  --fs-h1: 30px;       --lh-h1: 38px;       --fw-h1: 800;
+  --fs-h2: 24px;       --lh-h2: 32px;       --fw-h2: 700;
+  --fs-h3: 20px;       --lh-h3: 28px;       --fw-h3: 700;
+  --fs-h4: 17px;       --lh-h4: 24px;       --fw-h4: 700;
+  --fs-body-lg: 16px;  --lh-body-lg: 24px;
+  --fs-body: 14px;     --lh-body: 21px;
+  --fs-sm: 13px;       --lh-sm: 18px;
+  --fs-xs: 12px;       --lh-xs: 16px;
+  --fs-micro: 11px;    --lh-micro: 14px;
+
+  /* ---------- RADII ---------- */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;   /* default card / button */
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-pill: 999px;
+
+  /* ---------- SHADOWS (soft, low-spread) ---------- */
+  --sh-xs: 0 1px 2px rgba(28,31,34,0.06);
+  --sh-sm: 0 2px 8px rgba(28,31,34,0.06);
+  --sh-md: 0 4px 16px rgba(28,31,34,0.08);
+  --sh-lg: 0 8px 28px rgba(28,31,34,0.10);
+  --sh-teal: 0 6px 18px rgba(0,136,128,0.22);
+
+  /* ---------- SPACING (4px base) ---------- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px;
+}
+
+/* ============================================================
+   SEMANTIC ELEMENT DEFAULTS
+   ============================================================ */
+body {
+  font-family: var(--font-sans);
+  color: var(--fg-1);
+  background: var(--bg);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, .h1 { font-size: var(--fs-h1); line-height: var(--lh-h1); font-weight: var(--fw-h1); color: var(--fg-1); letter-spacing: -0.02em; margin: 0; }
+h2, .h2 { font-size: var(--fs-h2); line-height: var(--lh-h2); font-weight: var(--fw-h2); color: var(--fg-1); letter-spacing: -0.01em; margin: 0; }
+h3, .h3 { font-size: var(--fs-h3); line-height: var(--lh-h3); font-weight: var(--fw-h3); color: var(--fg-1); margin: 0; }
+h4, .h4 { font-size: var(--fs-h4); line-height: var(--lh-h4); font-weight: var(--fw-h4); color: var(--fg-1); margin: 0; }
+p, .body { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--fg-2); margin: 0; }
+.body-lg { font-size: var(--fs-body-lg); line-height: var(--lh-body-lg); }
+.small { font-size: var(--fs-sm); line-height: var(--lh-sm); }
+.caption { font-size: var(--fs-xs); line-height: var(--lh-xs); color: var(--fg-3); }
+.eyebrow { font-size: var(--fs-xs); line-height: var(--lh-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--teal-600); }
+.price { font-weight: 800; color: var(--fg-1); }
+.strike { color: var(--fg-3); text-decoration: line-through; font-weight: 600; }
+.save { color: var(--save-600); font-weight: 700; }
+
+/* ---- additions the pages need on top of the DS file ---- */
+:root {
+  --footer-bg:   #EDF1FB;
+  --footer-line: #DDE4F5;
+  --fw-regular: 400; --fw-medium: 500; --fw-semi: 600; --fw-bold: 700; --fw-black: 800;
+}
+html { font-size: 16px; touch-action: manipulation; }

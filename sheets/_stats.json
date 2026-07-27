@@ -1,0 +1,276 @@
+{
+ "classes": [
+  "Anti-allergic Medicines",
+  "Anti-diabetic Medicines",
+  "Antibiotics",
+  "Antifungal Medicines",
+  "Antiviral Medicines",
+  "Blood Pressure Medicines",
+  "Blood Thinners",
+  "Bone and Joint Medicines",
+  "Cancer Medicines",
+  "Cardiac Medicines",
+  "Cholesterol Medicines",
+  "Cough and Cold Medicines",
+  "Dermatology Medicines",
+  "Diuretics",
+  "Gastrointestinal Medicines",
+  "Gout Medicines",
+  "Iron and Anaemia Medicines",
+  "Liver Care Medicines",
+  "Men's Health Medicines",
+  "Mental Health Medicines",
+  "Migraine Medicines",
+  "Muscle Relaxants",
+  "Nerve Pain Medicines",
+  "Neurological Medicines",
+  "Pain Relief Medicines",
+  "Prostate Care Medicines",
+  "Respiratory Medicines",
+  "Steroids",
+  "Vaccines",
+  "Vitamins and Supplements",
+  "Weight Management Medicines",
+  "Women's Health Medicines"
+ ],
+ "sizes": {
+  "Cancer Medicines": 219,
+  "Respiratory Medicines": 27,
+  "Vitamins and Supplements": 62,
+  "Mental Health Medicines": 125,
+  "Antibiotics": 73,
+  "Dermatology Medicines": 45,
+  "Gout Medicines": 14,
+  "Liver Care Medicines": 9,
+  "Immunosuppressants": 7,
+  "Cardiac Medicines": 35,
+  "Anti-diabetic Medicines": 128,
+  "Blood Pressure Medicines": 123,
+  "Neurological Medicines": 66,
+  "Women's Health Medicines": 26,
+  "Gastrointestinal Medicines": 103,
+  "Cough and Cold Medicines": 39,
+  "Cholesterol Medicines": 68,
+  "Vaccines": 18,
+  "Pain Relief Medicines": 60,
+  "Eye and Ear Medicines": 6,
+  "Nerve Pain Medicines": 38,
+  "Antiviral Medicines": 8,
+  "Antifungal Medicines": 15,
+  "Anti-allergic Medicines": 41,
+  "Bone and Joint Medicines": 29,
+  "Diuretics": 11,
+  "Men's Health Medicines": 22,
+  "Prostate Care Medicines": 12,
+  "Local Anaesthetics": 4,
+  "Steroids": 18,
+  "Blood Thinners": 23,
+  "Thyroid Medicines": 4,
+  "Kidney and Urology Medicines": 6,
+  "Weight Management Medicines": 23,
+  "Muscle Relaxants": 11,
+  "Migraine Medicines": 9,
+  "Antiparasitic Medicines": 6,
+  "Sleep Aid Medicines": 6,
+  "Iron and Anaemia Medicines": 11,
+  "Tuberculosis Medicines": 6
+ },
+ "subclasses": {
+  "Pain Relief Medicines": {
+   "Analgesic/antipyretic": 27,
+   "Anti-Inflammatory": 13,
+   "Analgesic": 13,
+   "Topical Analgesic": 1
+  },
+  "Gastrointestinal Medicines": {
+   "Anti-Spasmodics": 5,
+   "Anti-Emetic": 11,
+   "Prebiotic and Probiotic": 5,
+   "Laxative": 2,
+   "Antacid": 22,
+   "Antacid and Anti-Emetic": 27,
+   "Anti-Diarrhoeal": 5,
+   "Digestants": 3,
+   "Antacid and Anti-Flatulent": 2,
+   "Antacid and Anti-Reflux": 11,
+   "Appetite Stimulant": 2,
+   "Anal Fissure": 1,
+   "Anti-Flatulent and Digestants": 1,
+   "Ulcerative Colitis": 1
+  },
+  "Liver Care Medicines": {
+   "Cholelithiasis": 7,
+   "Hepatoprotective": 2
+  },
+  "Antibiotics": {
+   "Penicillins": 10,
+   "Antiseptic": 4,
+   "Combinations": 7,
+   "Cephalosporins": 17,
+   "Fluoroquinolones": 7,
+   "Topical Antibiotic": 6,
+   "Other": 8,
+   "Macrolides": 9,
+   "Otic Antimicrobial": 1,
+   "Topical Anti-Microbial": 1,
+   "Carbapenems": 1
+  },
+  "Dermatology Medicines": {
+   "Melasma": 7,
+   "Psoriasis": 2,
+   "Topical Antibiotic and Steroid": 1,
+   "Topical Antimicrobial and Steroid": 9,
+   "Anti-Acne": 9,
+   "Hair Care": 1,
+   "Skin Care": 1,
+   "Alopecia": 7,
+   "Anti-Dandruff": 7,
+   "Atopic Dermatitis": 1
+  },
+  "Vitamins and Supplements": {
+   "Multivitamin": 14,
+   "Other": 21,
+   "Calcium and Vitamin D Supplementation": 16,
+   "Nutritional Supplement": 8,
+   "Electrolytes": 1,
+   "Antioxidant": 1
+  },
+  "Blood Thinners": {
+   "Anti-Platelet": 12,
+   "Haemostatics": 2,
+   "Anti-Coagulant": 9
+  },
+  "Women's Health Medicines": {
+   "Menstrual and Gynaecological Disorders": 3,
+   "Female Hormone Pills": 4,
+   "Polycystic Ovarian Disease": 1,
+   "Female Infertility": 8,
+   "Hormone Replacement Therapy": 5,
+   "Premature Labour Prevention": 1,
+   "Infertility": 1,
+   "Hyperprolactinemia": 1
+  },
+  "Neurological Medicines": {
+   "Anti-Vertigo": 3,
+   "Anti-Epileptic": 29,
+   "Anti-Parkinsonian": 10,
+   "Multiple Sclerosis": 1,
+   "Alzheimer Disease": 4,
+   "Cerebro Protective": 5,
+   "Myasthenia Gravis": 1
+  },
+  "Steroids": {
+   "Other": 17,
+   "Topical Steroid": 1
+  },
+  "Cholesterol Medicines": {
+   "Statins": 56,
+   "Fibrates": 2,
+   "Combinations": 9,
+   "Hypolipidemic Drugs": 1
+  },
+  "Blood Pressure Medicines": {
+   "Calcium channel blockers": 10,
+   "Angiotensin receptor blockers": 22,
+   "Beta blockers": 17,
+   "Combinations": 46,
+   "Alpha blockers": 2,
+   "Diuretic combinations": 2,
+   "ACE inhibitors": 9,
+   "Anti-Hypertensive": 5,
+   "Anti-Hypotensive": 1
+  },
+  "Respiratory Medicines": {
+   "Xanthines": 7,
+   "Inhaled corticosteroids": 2,
+   "Combinations": 4,
+   "Beta-2 agonists": 4,
+   "Leukotriene antagonists": 8,
+   "Anti-Asthmatic": 1
+  },
+  "Cardiac Medicines": {
+   "Anti-Anginal": 19,
+   "Varicose Veins": 1,
+   "Congestive Heart Failure": 5,
+   "Vasodilating Agent": 1
+  },
+  "Nerve Pain Medicines": {
+   "Peripheral Neuropathy": 33
+  },
+  "Anti-diabetic Medicines": {
+   "Combinations": 61,
+   "Biguanides": 6,
+   "Other": 2,
+   "Alpha-glucosidase inhibitors": 5,
+   "Sulfonylureas": 8,
+   "Thiazolidinediones": 3,
+   "DPP-4 inhibitors": 10,
+   "Diabetic Neuropathy": 2,
+   "Meglitinides": 1,
+   "SGLT2 inhibitors": 3,
+   "GLP-1 receptor agonists": 24,
+   "Insulins": 1
+  },
+  "Iron and Anaemia Medicines": {
+   "Haematinics": 10,
+   "Sickle Cell Anaemia": 1
+  },
+  "Antifungal Medicines": {
+   "Other": 7,
+   "Topical Anti-Fungal and Steroid": 2,
+   "Topical Anti-Fungal": 6
+  },
+  "Bone and Joint Medicines": {
+   "Rheumatoid Arthritis": 4,
+   "Osteoarthritis": 15,
+   "Osteoporosis": 9
+  },
+  "Gout Medicines": {
+   "Xanthine oxidase inhibitors": 13,
+   "Anti-inflammatory agents": 1
+  },
+  "Mental Health Medicines": {
+   "Combinations": 16,
+   "Tricyclic antidepressants": 14,
+   "Benzodiazepines": 30,
+   "Anti-Anxiety": 5,
+   "SSRIs": 19,
+   "Atypical antipsychotics": 20,
+   "Other antidepressants": 3,
+   "SNRIs": 7,
+   "Anti-Psychotics": 4,
+   "Anti-Depressant": 5,
+   "Mood stabilisers": 1,
+   "Deaddiction": 1
+  },
+  "Men's Health Medicines": {
+   "Sexual Wellness": 21,
+   "Erectile Dysfunction": 1
+  },
+  "Cancer Medicines": {
+   "Hormonal therapies": 4,
+   "Neutropenia": 1,
+   "Anti-Neoplastic": 4,
+   "Targeted kinase inhibitors": 1,
+   "Mitotic inhibitors": 94,
+   "Alkylating and platinum agents": 12,
+   "Monoclonal antibodies": 96
+  },
+  "Antiviral Medicines": {
+   "Hepatitis B": 4,
+   "Other": 1,
+   "Anti-Retroviral": 3
+  },
+  "Weight Management Medicines": {
+   "Lipase inhibitors": 4,
+   "GLP-1 receptor agonists": 7
+  },
+  "Anti-allergic Medicines": {},
+  "Cough and Cold Medicines": {},
+  "Diuretics": {},
+  "Migraine Medicines": {},
+  "Muscle Relaxants": {},
+  "Prostate Care Medicines": {},
+  "Vaccines": {}
+ }
+}

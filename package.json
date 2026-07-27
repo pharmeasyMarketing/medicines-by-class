@@ -1,0 +1,14 @@
+{
+  "name": "medicines-by-class",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "fetch": "node src/fetch-sheets.mjs",
+    "validate": "node src/validate.mjs",
+    "snapshot": "node src/snapshot.mjs --concurrency 10",
+    "build": "node src/build.mjs",
+    "all": "npm run fetch && npm run validate && npm run snapshot && npm run build",
+    "preview": "npx http-server .preview -p 4183 -c-1"
+  },
+  "engines": { "node": ">=20" }
+}

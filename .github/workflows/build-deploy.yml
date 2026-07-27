@@ -1,0 +1,112 @@
+name: Build and deploy Medicines by Class
+
+on:
+  schedule:
+    - cron: "30 20 * * *"        # 02:00 IST nightly
+  repository_dispatch:
+    types: [sheet-updated]        # fired by the Apps Script on sheet edit
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["src/**", "assets/**", "sheets/**"]
+
+concurrency:
+  group: mbc-deploy
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+
+      # ------------------------------------------------------------------
+      # 1. pull every tab out of the one Google Sheet. Tabs are fetched by
+      #    name; the script refuses to overwrite a tab that lost >50% of its
+      #    rows, so a half-saved edit cannot wipe the site.
+      # ------------------------------------------------------------------
+      - name: Fetch sheet tabs
+        env:
+          SHEET_ID: ${{ vars.SHEET_ID || secrets.SHEET_ID }}
+        run: node src/fetch-sheets.mjs
+
+      - name: Validate sheets
+        run: node src/validate.mjs
+
+      # ------------------------------------------------------------------
+      # 2. price snapshot. Aborts if >20% of lookups fail, so a bad API day
+      #    never publishes a grid full of blanks.
+      # ------------------------------------------------------------------
+      - name: Snapshot prices
+        env:
+          PRICE_API: ${{ secrets.PRICE_API_TEMPLATE || 'https://api.pharmeasy.in/v5/product-details/{id}/dynamic' }}
+        run: node src/snapshot.mjs --concurrency 10
+
+      - name: Build
+        env:
+          SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://pharmeasy.in' }}
+          SITE_BASE:   ${{ vars.SITE_BASE   || '/medicines-by-class' }}
+          ASSET_BASE:  ${{ vars.ASSET_BASE  || '/medicines-by-class/assets' }}
+          PRICE_API:   ${{ vars.PUBLIC_PRICE_API || 'https://api.pharmeasy.in/v5/product-details/{id}/dynamic' }}
+        run: node src/build.mjs
+
+      # ------------------------------------------------------------------
+      # 3. only ship what changed. Rewriting every file nightly would give
+      #    every page a fresh sitemap lastmod even when nothing changed.
+      # ------------------------------------------------------------------
+      - name: Diff against last deploy
+        id: diff
+        run: |
+          set -euo pipefail
+          if [ -f .deploy-manifest.json ]; then
+            changed=$(node -e '
+              const a=require("./.deploy-manifest.json"), b=require("./dist/manifest.json");
+              const keys=new Set([...Object.keys(a),...Object.keys(b)]);
+              const d=[...keys].filter(k=>a[k]!==b[k]);
+              console.log(d.length);
+            ')
+          else
+            changed=all
+          fi
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          echo "pages changed: $changed"
+
+      - name: Deploy to CyberPanel
+        if: steps.diff.outputs.changed != '0'
+        env:
+          SSH_KEY:  ${{ secrets.DEPLOY_SSH_KEY }}
+          HOST:     ${{ secrets.DEPLOY_HOST }}
+          USER:     ${{ secrets.DEPLOY_USER }}
+          DEST:     ${{ secrets.DEPLOY_PATH }}
+          KNOWN:    ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN" > ~/.ssh/known_hosts
+          rsync -az --delete \
+            --exclude 'manifest.json' \
+            -e "ssh -i ~/.ssh/id_ed25519" \
+            dist/ "$USER@$HOST:$DEST/"
+
+      - name: Record deployed manifest
+        if: steps.diff.outputs.changed != '0'
+        run: |
+          cp dist/manifest.json .deploy-manifest.json
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .deploy-manifest.json sheets/
+          git diff --staged --quiet || git commit -m "deploy: ${{ steps.diff.outputs.changed }} pages changed [skip ci]"
+          git push
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7

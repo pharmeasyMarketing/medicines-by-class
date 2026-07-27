@@ -1,0 +1,2 @@
+from_path,to_path,status_code,note
+/medicines-by-class/anti-diabetic,/medicines-by-class/anti-diabetic-medicines,301,example - slug rename

@@ -1,0 +1,19 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "mbc-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "--yes",
+        "http-server",
+        ".preview",
+        "-p",
+        "4183",
+        "-c-1",
+        "--silent"
+      ],
+      "port": 4183
+    }
+  ]
+}

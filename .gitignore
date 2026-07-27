@@ -1,0 +1,12 @@
+dist/
+data/prices.json
+.preview/
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+conditions.zip
+conditions-cart-test.html
+cart-test-*.html
+Medicines-by-class.xlsx
+.deploy-manifest.json
