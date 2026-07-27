@@ -197,4 +197,4 @@ womens-health-medicines,3,Can I take these while pregnant?,"Some are not suitabl
 womens-health-medicines,4,Do these need monitoring?,Some do. Your doctor will tell you what checks are needed and when.,draft
 womens-health-medicines,5,Do I need a prescription for these medicines?,"Many medicines in this class are prescription-only. Where a prescription is required, you will be asked to upload a valid prescription before the order is confirmed.",draft
 womens-health-medicines,6,Can two medicines from this class be used interchangeably?,"Not necessarily. Medicines in the same class can differ in composition, strength and suitability. Only your doctor or pharmacist can decide whether one may be used in place of another.",draft
-sarthak-test,1,Is this a real medicine class?,No. It is a temporary row used to verify that the Google Sheet drives the static build.,draft
+sarthak-test-2,1,Is this a real medicine class?,No. It is a temporary row used to verify that the Google Sheet drives the static build.,draft
