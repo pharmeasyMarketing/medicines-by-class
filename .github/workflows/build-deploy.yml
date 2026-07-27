@@ -35,6 +35,7 @@ jobs:
       - name: Fetch sheet tabs
         env:
           SHEET_ID: ${{ vars.SHEET_ID || secrets.SHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: node src/fetch-sheets.mjs
 
       - name: Validate sheets

@@ -18,7 +18,7 @@ dist/                 build output – this is what ships
 
 ## The Google Sheet
 
-One spreadsheet, five tabs – [Medicines-by-class](https://docs.google.com/spreadsheets/d/1HgeXKTLWRIls3TfOjdnvUMJdW-0DE-8Pdr1hJ34pziA/edit).
+One spreadsheet, five tabs – [Medicines-by-class](<your sheet URL>).
 
 | Tab | Rows | Owner |
 |---|---|---|
