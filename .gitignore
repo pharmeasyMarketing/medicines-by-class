@@ -10,3 +10,5 @@ conditions-cart-test.html
 cart-test-*.html
 Medicines-by-class.xlsx
 .deploy-manifest.json
+
+# built site is committed by CI, not locally

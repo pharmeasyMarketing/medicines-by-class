@@ -14,6 +14,9 @@ concurrency:
   group: mbc-deploy
   cancel-in-progress: false
 
+permissions:
+  contents: write        # needed to commit the build back into the repo
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -94,15 +97,29 @@ jobs:
             -e "ssh -i ~/.ssh/id_ed25519" \
             dist/ "$USER@$HOST:$DEST/"
 
-      - name: Record deployed manifest
+      # ------------------------------------------------------------------
+      # 4. commit the built site back into the repo under medicines-by-class/
+      #    so the static files are version-controlled and pullable from
+      #    anywhere, independent of the rsync target.
+      # ------------------------------------------------------------------
+      - name: Publish build into medicines-by-class/
         if: steps.diff.outputs.changed != '0'
         run: |
+          set -euo pipefail
+          rm -rf medicines-by-class
+          mkdir -p medicines-by-class
+          cp -R dist/. medicines-by-class/
           cp dist/manifest.json .deploy-manifest.json
+
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .deploy-manifest.json sheets/
-          git diff --staged --quiet || git commit -m "deploy: ${{ steps.diff.outputs.changed }} pages changed [skip ci]"
-          git push
+          git add -f medicines-by-class .deploy-manifest.json sheets/
+          if git diff --staged --quiet; then
+            echo "nothing changed"
+          else
+            git commit -m "build: ${{ steps.diff.outputs.changed }} page(s) changed [skip ci]"
+            git push
+          fi
 
       - uses: actions/upload-artifact@v4
         if: always()
