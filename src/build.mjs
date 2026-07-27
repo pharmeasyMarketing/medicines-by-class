@@ -358,7 +358,7 @@ ${body}
 `;
 
 /* ================================================================= data == */
-const classes = sheet("01_classes.csv").filter(c => c.status === "live");
+let classes = sheet("01_classes.csv").filter(c => c.status === "live");
 const meds = sheet("02_medicines.csv").filter(m => m.status === "live");
 const contentRows = Object.fromEntries(sheet("03_class_content.csv").map(r => [r.class_id, r]));
 const faqRows = sheet("04_faqs.csv");
@@ -381,6 +381,21 @@ for (const m of meds) {
 }
 for (const list of Object.values(medsByClass)) list.sort((a, b) => (+a.sort_rank) - (+b.sort_rank));
 
+/* "We do not sell this product" (tier 1) is a live signal, so a class can be
+   gutted between builds. Filter first, then drop any class that falls under
+   the publish threshold -- a 1-medicine class page is thin content. */
+const sellable = m => { const s = snapshot[m.sku]; return !(s && s.tierType === 1); };
+for (const cid of Object.keys(medsByClass)) medsByClass[cid] = medsByClass[cid].filter(sellable);
+
+const dropped = classes.filter(c => (medsByClass[c.class_id]?.length || 0) < CFG.minSubclassPage);
+if (dropped.length) {
+  console.log(`unpublished (under ${CFG.minSubclassPage} sellable medicines):`);
+  for (const c of dropped)
+    console.log(`  ${String(medsByClass[c.class_id]?.length || 0).padStart(3)}  ${c.class_name}`);
+}
+const live = new Set(classes.filter(c => !dropped.includes(c)).map(c => c.class_id));
+classes = classes.filter(c => live.has(c.class_id));
+
 const byId = Object.fromEntries(classes.map(c => [c.class_id, c]));
 const countOf = c => medsByClass[c.class_id]?.length || 0;
 
@@ -396,12 +411,22 @@ function medCard(m) {
   const sale = isFinite(apiSale) ? apiSale * (1 - CFG.extraOffPct / 100) : NaN;
   const hasPrice = isFinite(sale) && sale > 0;
   const off = hasPrice && isFinite(mrp) && mrp > sale ? Math.round((1 - sale / mrp) * 100) : 0;
-  const avail = snap ? (snap.avail ? "in" : "out") : "unknown";
+  // tier 1 = "We do not sell this product" -> never merchandise it
+  const tierType = snap && snap.tierType != null ? snap.tierType : null;
+  const discontinued = /discontinu/i.test((snap && snap.tierText) || "");
+  const notSold = tierType === 1;
+  const avail = notSold ? "notsold"
+              : discontinued ? "discontinued"
+              : snap ? (snap.avail ? "in" : "out") : "unknown";
+  const stateLabel = notSold ? "Not available"
+                   : discontinued ? "Discontinued"
+                   : avail === "out" ? (snap && snap.notify ? "Notify me" : "Out of stock")
+                   : "Add";
   const subst = snap ? (snap.subst ? "1" : "0") : "0";
   const ptype = snap && snap.ptype != null ? snap.ptype : 1;
   const href = `${CFG.origin}${CFG.pdpBase}/${m.slug}`;
 
-  return `<article class="med" data-sku="${esc(m.sku)}" data-name="${esc(m.medicine_name)}" data-pack="${esc(m.pack_size)}" data-href="${esc(href)}" data-sub="${esc(m.sub_class)}" data-form="${esc(m.dosage_form)}" data-avail="${avail}" data-subst="${subst}" data-ptype="${ptype}" data-rank="${esc(m.sort_rank)}" data-price="${hasPrice ? sale.toFixed(2) : ""}" data-off="${off}">
+  return `<article class="med" data-sku="${esc(m.sku)}" data-name="${esc(m.medicine_name)}" data-pack="${esc(m.pack_size)}" data-href="${esc(href)}" data-sub="${esc(m.sub_class)}" data-form="${esc(m.dosage_form)}" data-avail="${avail}" data-state="${esc((snap && snap.tierText) || "")}" data-subst="${subst}" data-ptype="${ptype}" data-rank="${esc(m.sort_rank)}" data-price="${hasPrice ? sale.toFixed(2) : ""}" data-off="${off}">
       <div class="med-top">
         <span class="badge-rx">${bool(m.rx_required) ? "Rx" : "OTC"}</span>
         <span class="badge-wrap">
@@ -419,7 +444,7 @@ function medCard(m) {
           ${CFG.extraOffPct > 0 ? `<a class="tnc tnc-price" href="${esc(CFG.tncUrl)}" rel="nofollow">T&amp;C</a>` : ""}
         </div>
         <div class="save">${off ? "You save " + rupee(mrp - sale) : ""}</div>
-        <button type="button" class="btn-add"${avail === "in" ? "" : " disabled"}>${avail === "in" ? "Add" : "Currently unavailable"}</button>
+        <button type="button" class="btn-add"${avail === "in" ? "" : " disabled"}>${stateLabel}</button>
       </div>
     </article>`;
 }

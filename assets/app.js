@@ -634,6 +634,7 @@
     if (sortSel) sortSel.value = state.sort;
 
     function matches(card) {
+      if (card.dataset.drop === "1") return false;   // "we do not sell this"
       if (state.subs.length && state.subs.indexOf(card.dataset.sub) === -1) return false;
       if (state.forms.length && state.forms.indexOf(card.dataset.form) === -1) return false;
       if (state.stock && card.dataset.avail !== "in") return false;
@@ -877,14 +878,33 @@
         mrpEl.hidden = true; saveEl.textContent = ""; offEl.classList.remove("on");
       }
 
-      card.dataset.avail = avail ? "in" : "out";
+      /* productTierAttributes gives the exact reason, so the card can say
+         what is actually true rather than a catch-all "unavailable":
+           type 5 -> live      type 2 -> out of stock / discontinued
+           type 1 -> "We do not sell this product"                        */
+      var tier = d.productTierAttributes || {};
+      var text = String(tier.text || "");
+      var notSold = tier.type === 1;
+      var discontinued = /discontinu/i.test(text);
+      var notify = !!((d.productAvailabilityFlags || {}).notifyMe);
+
+      card.dataset.state = text;
+      card.dataset.avail = notSold ? "notsold"
+                         : discontinued ? "discontinued"
+                         : avail ? "in" : "out";
+
+      // a product PharmEasy does not sell should not sit in the grid at all
+      if (notSold) { card.dataset.drop = "1"; card.hidden = true; }
+
       var sub = d.productSubstitutionAttributes;
       if (sub && sub.count > 0) card.dataset.subst = "1";
 
       if (addBtn) {
         addBtn.disabled = !avail;
-        addBtn.textContent = avail ? "Add"
-          : ((d.productAvailabilityFlags || {}).notifyMe ? "Notify me" : "Currently unavailable");
+        addBtn.textContent = notSold ? "Not available"
+          : discontinued ? "Discontinued"
+          : avail ? "Add"
+          : (notify ? "Notify me" : "Out of stock");
       }
     }
 
