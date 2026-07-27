@@ -1,0 +1,60 @@
+name: Publish preview to GitHub Pages
+
+# A browsable copy of the site for sharing/review. Built with SITE_ORIGIN set
+# to the Pages host so internal links stay on Pages instead of jumping to
+# pharmeasy.in. Cart and live pricing do NOT work here -- the pricing API only
+# allows CORS from pharmeasy.in, so cards show the build-time snapshot.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["src/**", "assets/**", "sheets/**", ".github/workflows/pages.yml"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+
+      - name: Snapshot prices
+        continue-on-error: true          # preview still builds if the API is down
+        run: node src/snapshot.mjs --concurrency 10
+
+      - name: Build for Pages
+        env:
+          SITE_ORIGIN: https://pharmeasymarketing.github.io
+          SITE_BASE:   /medicines-by-class
+          ASSET_BASE:  /medicines-by-class/assets
+        run: |
+          node src/validate.mjs
+          node src/build.mjs
+          # Pages serves the repo root, so nest the site under its base path
+          mkdir -p _site/medicines-by-class
+          cp -R dist/. _site/medicines-by-class/
+          printf '<meta http-equiv="refresh" content="0; url=/medicines-by-class/">' > _site/index.html
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
