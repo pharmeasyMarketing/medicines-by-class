@@ -103,8 +103,26 @@ jobs:
           printf '%s' "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           printf '%s\n' "$KNOWN" > ~/.ssh/known_hosts
-          rsync -az --delete --exclude 'manifest.json' \
-            -e "ssh -i ~/.ssh/id_ed25519 -p ${PORT:-22}" dist/ "$USER@$HOST:$DEST/"
+
+          # This VPS intermittently drops runner connections — the fever-watch
+          # deploy on the same host carries the identical workaround. Without
+          # retries a single transient drop fails the whole deploy.
+          # ConnectTimeout keeps a dropped attempt at ~25s instead of ~2min.
+          SSH_OPTS="-i ~/.ssh/id_ed25519 -p ${PORT:-22} -o ConnectTimeout=25 -o ServerAliveInterval=15 -o ServerAliveCountMax=4"
+          for attempt in 1 2 3; do
+            if rsync -az --delete --exclude 'manifest.json' \
+                 -e "ssh $SSH_OPTS" dist/ "$USER@$HOST:$DEST/"; then
+              echo "deployed on attempt $attempt"
+              exit 0
+            fi
+            if [ "$attempt" = 3 ]; then
+              echo "::error::rsync failed after 3 attempts"
+              exit 1
+            fi
+            wait=$((attempt * 30))
+            echo "attempt $attempt failed — retrying in ${wait}s"
+            sleep "$wait"
+          done
 
       - name: Publish build into medicines-by-class/
         run: |
