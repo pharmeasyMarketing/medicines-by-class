@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -343,7 +344,7 @@ const medicalPageNode = ({ url, name, desc, reviewer, credentials, reviewed, upd
 
 const graph = nodes => ({ "@context": "https://schema.org", "@graph": nodes });
 
-const page = ({ title, desc, canonical, jsonld, body, extraHead = "" }) => `<!DOCTYPE html>
+const page = ({ title, desc, canonical, jsonld, body, extraHead = "", ogSlug = "index" }) => `<!DOCTYPE html>
 <html lang="en-IN">
 <head>
 <meta charset="utf-8">
@@ -355,6 +356,11 @@ const page = ({ title, desc, canonical, jsonld, body, extraHead = "" }) => `<!DO
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${esc(canonical)}">
 <meta property="og:type" content="website">
+<meta property="og:image" content="${CFG.origin}${CFG.base}/og/${ogSlug}.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${CFG.origin}${CFG.base}/og/${ogSlug}.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.pharmeasy.in">
 <link rel="stylesheet" href="${CFG.assets}/tokens.css">
@@ -527,12 +533,11 @@ ${header()}
       <div class="eyebrow-sm">Quick access</div>
       <h2>Popular medicine classes</h2>
       <div class="pop-grid">
-        ${popular.map((p, i) => { const [tint, accent] = cat(p.category); return `<a class="pop-row${i >= 6 ? " m-extra" : ""}" style="--mo:${i + 1}" href="${CFG.origin}${CFG.base}/${p.slug}/">
+        ${popular.map((p) => { const [tint, accent] = cat(p.category); return `<a class="pop-row" href="${CFG.origin}${CFG.base}/${p.slug}/">
           <span class="cls-tile" style="background:${tint};color:${accent}">${icon(p.icon, 20, 1.9)}</span>
           <span class="pop-main"><span class="pop-name">${esc(p.class_name)}</span><span class="pop-n">${countOf(p)} medicines</span></span>
           <span class="cls-go">${chev(16, 2.4)}</span>
         </a>`; }).join("\n        ")}
-        <button type="button" class="pop-more">View all popular classes</button>
       </div>
     </section>
 
@@ -638,7 +643,7 @@ ${footer()}`;
         acceptedAnswer: { "@type": "Answer", text: f.answer_md } })) }] : []),
   ])];
 
-  write("index.html", page({ title: c.meta_title, desc: c.meta_description, canonical, jsonld, body }));
+  write("index.html", page({ title: c.meta_title, desc: c.meta_description, canonical, jsonld, body, ogSlug: "index" }));
   return canonical;
 }
 
@@ -777,10 +782,8 @@ ${header()}
         <div class="card"><h2>Safety information</h2>
           <ul class="checks">${lines(c.safety_bullets_md).map(b => `<li>${tick()}<span>${md(b, { inline: true })}</span></li>`).join("")}</ul>
         </div>
-        <div class="faq-card">
-          <div style="padding:24px 28px 8px"><h2 style="font-size:22px;font-weight:700;margin:0">Frequently Asked Questions</h2></div>
-          ${faqBlock(faqs, "c")}
-        </div>
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        <div class="faq-card">${faqBlock(faqs, "c")}</div>
         <div class="card"><h2>Related classes</h2>
           <div class="rel-list">${related.map(r => `<a href="${CFG.origin}${CFG.base}/${r.slug}/"><span>${esc(r.class_name)}</span><span class="n">${countOf(r)} ${chev(12, 2.4)}</span></a>`).join("")}</div>
         </div>
@@ -792,6 +795,10 @@ ${header()}
 </main>
 
 <div class="scrim"></div>
+<div class="qty-sheet" id="qty-sheet" role="dialog" aria-modal="true" aria-label="Select quantity" hidden>
+  <div class="qs-hd">Select Quantity</div>
+  <div class="qs-list" data-qs-list></div>
+</div>
 <aside class="cart-drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-label="Your cart" hidden>
   <div class="cd-hd"><b>Your cart <span data-cd-count>0</span></b>
     <button type="button" class="sheet-x" data-cd-close aria-label="Close">✕</button></div>
@@ -866,7 +873,7 @@ ${footer()}`;
     outs.push({ dir, canonical, indexable: !noindex });
     write(`${dir}/index.html`, page({
       title: (c.meta_title || `${cl.class_name} | PharmEasy`) + suffix,
-      desc: c.meta_description || "", canonical, jsonld, body, extraHead: head,
+      desc: c.meta_description || "", canonical, jsonld, body, extraHead: head, ogSlug: cl.slug,
     }));
   }
   return outs;
@@ -903,7 +910,20 @@ fs.writeFileSync(path.join(DIST, "sitemap.xml"),
 fs.cpSync(path.join(ROOT, "assets"), path.join(DIST, "assets"), { recursive: true });
 fs.writeFileSync(path.join(DIST, "manifest.json"), JSON.stringify(manifest, null, 1));
 
+/* Share cards. Run from here rather than as a separate npm script so both the
+   production and the Pages build get them — dist/ is wiped on every build, and
+   a missing og/ means WhatsApp shows a bare grey link. */
+let ogCount = 0;
+try {
+  const r = spawnSync("python3", [path.join(ROOT, "src", "prep", "make_og.py")], { encoding: "utf-8" });
+  if (r.status === 0) ogCount = (fs.existsSync(path.join(DIST, "og")) ? fs.readdirSync(path.join(DIST, "og")).length : 0);
+  else console.warn(`  ! og cards skipped: ${(r.stderr || "").trim().split("\n").pop() || "python3/Pillow unavailable"}`);
+} catch {
+  console.warn("  ! og cards skipped: python3 not found");
+}
+
 console.log(`classes            : ${classes.length}`);
 console.log(`medicines          : ${meds.length.toLocaleString()}`);
 console.log(`pages written      : ${pageCount}  (${urls.length} indexable, in sitemap)`);
+console.log(`og share cards     : ${ogCount}`);
 console.log(`output             : dist/`);
