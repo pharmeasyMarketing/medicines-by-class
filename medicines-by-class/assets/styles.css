@@ -1330,3 +1330,64 @@ header { box-shadow: var(--sh-sm); }
 .cred-name { font-weight: 400; color: inherit; }
 a.cred-name { text-decoration: underline; text-underline-offset: 2px; }
 a.cred-name:hover { color: var(--teal-700); }
+
+/* ============================================================
+   Desktop header, two rows                      (round 14)
+   Row 1: logo | divider | search | Offers | Cart
+   Row 2: centred primary nav
+   ============================================================ */
+.hdr-top {
+  height: 76px; padding: 0 40px;
+  display: flex; align-items: center; gap: 20px;
+}
+.hdr-div { width: 1px; height: 38px; background: var(--line); flex: none; }
+
+/* search grows to fill the middle but stays capped, as on the live header */
+.hdr-search {
+  flex: 1 1 auto; max-width: 720px; min-width: 0;
+  display: flex; align-items: center; gap: 8px;
+  height: 48px; padding: 0 6px 0 18px;
+  background: #fff; border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: border-color .14s, box-shadow .14s;
+}
+.hdr-search:focus-within {
+  border-color: var(--teal-600);
+  box-shadow: 0 0 0 3px rgba(16,132,126,.12);
+}
+.hs-ico { display: flex; color: var(--fg-3); flex: none; }
+.hdr-search input {
+  flex: 1 1 auto; min-width: 0;
+  border: 0; outline: 0; background: transparent;
+  font: 400 15px/24px var(--font); color: var(--fg-1);
+}
+.hdr-search input::placeholder { color: var(--fg-3); }
+.hdr-search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.hs-btn {
+  flex: none; border: 0; cursor: pointer;
+  height: 38px; padding: 0 26px; border-radius: 999px;
+  background: var(--teal-600); color: #fff;
+  font: 600 15px/38px var(--font);
+}
+.hs-btn:hover { background: var(--teal-700); }
+
+.hdr-offers {
+  display: flex; align-items: center; gap: 7px; flex: none;
+  font-size: 15px; font-weight: 400; color: var(--fg-1);
+}
+.hdr-offers:hover { color: var(--teal-700); text-decoration: none; }
+
+/* Row 2 — the nav sits centred on its own line, divided from the search row */
+.hdr-bar { border-top: 1px solid var(--line); }
+.hdr-nav {
+  height: 54px; display: flex; align-items: center; justify-content: center;
+  gap: 34px; margin: 0; overflow: visible;
+}
+.hdr-nav .nav-item > a, .hdr-nav .nav-top { font-size: 15px; }
+
+@media (max-width: 1180px) {
+  .hdr-top { padding: 0 24px; gap: 14px; }
+  .hdr-search { max-width: none; }
+  .hdr-nav { gap: 22px; }
+  .hdr-nav .nav-item > a, .hdr-nav .nav-top { font-size: 14px; }
+}
