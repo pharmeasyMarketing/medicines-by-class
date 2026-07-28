@@ -37,7 +37,7 @@
      so it keeps its own and passes the skus across.
      ======================================================================= */
   var CART_KEY = "pe_mbc_cart";
-  var CART_MAX = 20;            // total units the cart will accept
+  var MAX_PER_ITEM = 20;        // units of any ONE medicine; the basket total is not capped
   var cart = (function () {
     try { return JSON.parse(localStorage.getItem(CART_KEY)) || {}; }
     catch (e) { return {}; }
@@ -53,15 +53,11 @@
   }
   function cartPaintCount() {
     var n = cartTotalItems();
-    // every visible stepper must reflect the basket-wide cap, not just the
-    // line that was last touched
-    var full = n >= CART_MAX;
-    $$(".qty-b[data-d='1']").forEach(function (b) { b.disabled = full; });
-    // only gate the buttons that are otherwise addable; an out-of-stock card
-    // stays disabled for its own reason and must not be re-enabled here
-    $$(".btn-add").forEach(function (b) {
-      var card = b.closest(".med");
-      if (card && card.dataset.avail === "in") b.disabled = full;
+    // the 20 applies per medicine, so a full line must not disable every other
+    // card's Add button — only its own stepper
+    $$(".qty-b[data-d='1']").forEach(function (b) {
+      var c = b.closest(".med");
+      b.disabled = !!c && cartQty(c.dataset.sku) >= MAX_PER_ITEM;
     });
     $$("[data-cart-count]").forEach(function (el) {
       el.textContent = n;
@@ -174,7 +170,7 @@
     if (!show) return;
     el.hidden = false;
     el.className = "cart-banner waiting";
-    el.innerHTML = "<span>Cart limit reached – you can add up to " + CART_MAX +
+    el.innerHTML = "<span>You can add up to " + MAX_PER_ITEM +
       " medicines in one order.</span>";
     clearTimeout(cartLimitNote._t);
     cartLimitNote._t = setTimeout(function () { el.hidden = true; }, 4000);
@@ -185,7 +181,7 @@
     var q = cartQty(sku) + delta;
 
     // cap the whole basket, not just one line
-    if (delta > 0 && cartTotalItems() + delta > CART_MAX) {
+    if (delta > 0 && cartQty(sku) + delta > MAX_PER_ITEM) {
       cartLimitNote(true);
       return;
     }
@@ -314,7 +310,7 @@
       list.innerHTML = '<p class="cd-empty">Your cart is empty. Add a medicine to get started.</p>';
       return;
     }
-    var full = cartTotalItems() >= CART_MAX;
+    var full = false;   // per-line cap is enforced per row below
     list.innerHTML = skus.map(function (k) {
       var i = cart[k];
       return '<div class="cd-row" data-cd-sku="' + k + '">' +
@@ -338,7 +334,7 @@
     if (card) { cartAdd(card, delta); }
     else {
       var q = cartQty(sku) + delta;
-      if (delta > 0 && cartTotalItems() + delta > CART_MAX) { drawerRender(); return; }
+      if (delta > 0 && cartQty(sku) + delta > MAX_PER_ITEM) { drawerRender(); return; }
       if (q <= 0) delete cart[sku]; else cart[sku].qty = q;
       cartSave();
     }
@@ -391,7 +387,7 @@
     if (q > 0 && !unavailable) {
       btn.className = "btn-add in-cart";
       btn.disabled = false;
-      btn.textContent = "Qty: " + q;
+      btn.innerHTML = "Qty: " + q + '<svg class="qc" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
     } else {
       btn.className = "btn-add";
       btn.disabled = unavailable;
@@ -401,31 +397,61 @@
 
   var qsCard = null;
   function qtyOpen(card) {
-    var sheet = $("#qty-sheet"), list = $("[data-qs-list]"), sc = $(".scrim");
+    var sheet = $("#qty-sheet"), list = $("[data-qs-list]");
     if (!sheet || !list) { cartAdd(card, 1); return; }
     qsCard = card;
     var cur = cartQty(card.dataset.sku);
-    var room = CART_MAX - (cartTotalItems() - cur);   // respect the basket cap
-    var max = Math.max(0, Math.min(CART_MAX, room));
+
+    // Always the full 1..20. The cap is per medicine, so what is already in the
+    // basket must not shorten this list.
     var out = "";
-    for (var i = 0; i <= max; i++)
-      out += '<button type="button" class="qs-opt' + (i === cur ? " on" : "") +
-             '" data-qs="' + i + '">' + i + '</button>';
+    if (cur > 0) out += '<button type="button" class="qs-opt qs-rm" data-qs="0">Remove Item</button>';
+    for (var i = 1; i <= MAX_PER_ITEM; i++)
+      out += '<button type="button" class="qs-opt' + (i === cur ? " on" : "") + '" data-qs="' + i + '">' +
+             '<span>' + i + '</span>' +
+             (i === MAX_PER_ITEM ? '<em class="qs-max">Max Quantity</em>' : '') + '</button>';
     list.innerHTML = out;
+
     sheet.hidden = false;
-    if (sc) sc.classList.add("on");
-    document.body.style.overflow = "hidden";
+    qtyPosition(card);
+    var on = list.querySelector(".qs-opt.on");   // open on the current value
+    if (on) list.scrollTop = Math.max(0, on.offsetTop - list.clientHeight / 2 + on.offsetHeight / 2);
+  }
+
+  /* Anchor under the button, flipping above when there is no room below and
+     clamping to the viewport so it never opens half off-screen. */
+  function qtyPosition(card) {
+    var sheet = $("#qty-sheet"), btn = $(".btn-add", card);
+    if (!sheet || !btn) return;
+    var b = btn.getBoundingClientRect();
+    sheet.style.visibility = "hidden";
+    var h = sheet.offsetHeight, w = sheet.offsetWidth;
+    var top = b.bottom + 6;
+    if (top + h > innerHeight - 8) top = Math.max(8, b.top - h - 6);
+    // left-align to the button; if that overflows, right-align to it so the
+    // popup still reads as belonging to that button rather than drifting
+    var left = b.left;
+    if (left + w > innerWidth - 8) left = b.right - w;
+    left = Math.min(Math.max(8, left), Math.max(8, innerWidth - w - 8));
+    sheet.style.top = top + "px";
+    sheet.style.left = left + "px";
+    sheet.style.visibility = "";
   }
 
   function qtyClose() {
-    var sheet = $("#qty-sheet"), drawer = $("#cart-drawer");
+    var sheet = $("#qty-sheet");
     if (sheet) sheet.hidden = true;
-    if (!drawer || drawer.hidden) {
-      var sc = $(".scrim"); if (sc) sc.classList.remove("on");
-      document.body.style.overflow = "";
-    }
     qsCard = null;
   }
+  addEventListener("resize", function () { if (qsCard) qtyPosition(qsCard); });
+  // Close when the PAGE scrolls (the popup is anchored to a button that moves),
+  // but not when the option list itself is scrolled — that is the whole point
+  // of the list.
+  addEventListener("scroll", function (e) {
+    if (!qsCard) return;
+    if (e.target && e.target.closest && e.target.closest("#qty-sheet")) return;
+    qtyClose();
+  }, true);
 
   document.addEventListener("click", function (e) {
     var opt = e.target.closest && e.target.closest("[data-qs]");
