@@ -437,24 +437,18 @@ function medCard(m) {
   const href = `${CFG.origin}${CFG.pdpBase}/${m.slug}`;
 
   return `<article class="med" data-sku="${esc(m.sku)}" data-name="${esc(m.medicine_name)}" data-pack="${esc(m.pack_size)}" data-href="${esc(href)}" data-sub="${esc(m.sub_class)}" data-form="${esc(m.dosage_form)}" data-avail="${avail}" data-state="${esc((snap && snap.tierText) || "")}" data-subst="${subst}" data-ptype="${ptype}" data-rank="${esc(m.sort_rank)}" data-price="${hasPrice ? sale.toFixed(2) : ""}" data-off="${off}">
-      <div class="med-top">
-        <span class="badge-rx">${bool(m.rx_required) ? "Rx" : "OTC"}</span>
-        <span class="badge-wrap">
-          <span class="badge-off${off ? " on" : ""}">${off ? off + "% OFF" : ""}</span>
-          ${CFG.extraOffPct > 0 ? `<a class="tnc" href="${esc(CFG.tncUrl)}" rel="nofollow">T&amp;C</a>` : ""}
-        </span>
-      </div>
+      <span class="badge-rx">${bool(m.rx_required) ? "Rx" : "OTC"}</span>
       <a class="med-name" href="${esc(href)}">${esc(m.medicine_name)}</a>
-      <span class="med-comp">${esc(m.composition || m.molecule_name)}</span>
+      ${m.manufacturer ? `<span class="med-by">By ${esc(m.manufacturer.toUpperCase())}</span>` : ""}
       <span class="med-pack">${esc(m.pack_size)}</span>
       <div class="med-foot">
+        <span class="mrp"${off ? "" : " hidden"}>${isFinite(mrp) ? rupee(mrp) : ""}</span>
         <div class="price-row">
-          <span class="price">${hasPrice ? rupee(sale) : "–"}</span>
-          <span class="mrp"${off ? "" : " hidden"}>${isFinite(mrp) ? rupee(mrp) : ""}</span>
-          ${CFG.extraOffPct > 0 ? `<a class="tnc tnc-price" href="${esc(CFG.tncUrl)}" rel="nofollow">T&amp;C</a>` : ""}
+          <span class="price">${hasPrice ? rupee(sale) : "—"}</span>
+          <span class="badge-off${off ? " on" : ""}">${off ? off + "% OFF" : ""}</span>
         </div>
-        <div class="save">${off ? "You save " + rupee(mrp - sale) : ""}</div>
-        <button type="button" class="btn-add"${avail === "in" ? "" : " disabled"}>${stateLabel}</button>
+        ${CFG.extraOffPct > 0 ? `<span class="med-coupon">with Coupon Discount <a class="tnc" href="${esc(CFG.tncUrl)}" rel="nofollow">T&amp;C</a></span>` : ""}
+        <button type="button" class="btn-add"${avail === "in" ? "" : " disabled"}>${stateLabel === "Add" ? "Add to cart" : stateLabel}</button>
       </div>
     </article>`;
 }
