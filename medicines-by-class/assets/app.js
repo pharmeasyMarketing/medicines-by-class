@@ -561,14 +561,34 @@
      among the products — reveal it when the first card's Add button scrolls
      into view, and hide it again above that. */
   (function () {
-    var bar = $(".mtools"), firstCta = $(".med .btn-add") || $(".med");
-    if (!bar || !firstCta || !("IntersectionObserver" in window)) return;
+    var bar = $(".mtools");
+    if (!bar) return;
     bar.classList.add("is-armed");
-    new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        bar.classList.toggle("on", e.isIntersecting || e.boundingClientRect.top < 0);
-      });
-    }, { rootMargin: "0px 0px -40% 0px" }).observe(firstCta);
+
+    /* This used to observe one card captured at load. Filtering hides cards,
+       so as soon as that particular card was filtered out the observer fired
+       "not intersecting" and the bar slid away for good — applying any filter
+       made Sort|Filter vanish. Resolve the first *visible* card each time
+       instead, and re-check after every filter pass. */
+    function syncBar() {
+      var cards = $$(".med"), cta = null;
+      for (var i = 0; i < cards.length; i++) {
+        if (cards[i].offsetParent !== null) { cta = $(".btn-add", cards[i]) || cards[i]; break; }
+      }
+      if (!cta) { bar.classList.remove("on"); return; }
+      bar.classList.toggle("on", cta.getBoundingClientRect().top < window.innerHeight * 0.6);
+    }
+
+    var queued = false;
+    function onScroll() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () { queued = false; syncBar(); });
+    }
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onScroll);
+    document.addEventListener("mbc:filtered", syncBar);
+    syncBar();
   })();
   paintSyncNote();
   // arriving back with a session (e.g. straight after login) drains the queue
@@ -863,6 +883,7 @@
         if (shownNote) shownNote.textContent = "Showing " + live.length + " of " + vis.length;
       }
       if (count) count.textContent = vis.length + " of " + totalCatalogue + " medicines";
+      document.dispatchEvent(new CustomEvent("mbc:filtered"));
       hydrateVisible();
 
       chips.forEach(function (ch) {
