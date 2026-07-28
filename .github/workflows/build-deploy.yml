@@ -90,6 +90,7 @@ jobs:
           USER:    ${{ secrets.DEPLOY_USER }}
           DEST:    ${{ secrets.DEPLOY_PATH }}
           KNOWN:   ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          PORT:    ${{ secrets.DEPLOY_PORT }}
         run: |
           set -euo pipefail
           # Optional target. Without the secrets there is nothing to rsync to,
@@ -103,7 +104,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           printf '%s\n' "$KNOWN" > ~/.ssh/known_hosts
           rsync -az --delete --exclude 'manifest.json' \
-            -e "ssh -i ~/.ssh/id_ed25519" dist/ "$USER@$HOST:$DEST/"
+            -e "ssh -i ~/.ssh/id_ed25519 -p ${PORT:-22}" dist/ "$USER@$HOST:$DEST/"
 
       - name: Publish build into medicines-by-class/
         run: |
