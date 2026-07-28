@@ -1489,3 +1489,46 @@ a.cred-name:hover { color: var(--teal-700); }
 
 /* nav row height, matching the live header's nav band */
 .hdr-nav { height: 40px; }
+
+/* ============================================================
+   Mobile filter sheet + iOS quirks              (round 18)
+   ============================================================ */
+
+/* iOS Safari zooms the page whenever a focused input is under 16px, and it
+   never zooms back out. 16px is the threshold, not a design choice. */
+@media (max-width: 767px) {
+  .msearch input,
+  .hdr-search input,
+  input[type="search"],
+  input[type="text"],
+  select,
+  textarea { font-size: 16px; }
+}
+
+/* The Sort|Filter bar is fixed above everything; while a sheet is open it
+   would sit right on top of the Apply button and swallow the tap. */
+body.sheet-open .mtools { display: none; }
+
+/* Safari reports safe-area-inset-bottom as 0 while its address bar is
+   showing and ~34px once it hides on scroll, so an uncapped inset makes the
+   bar visibly grow mid-scroll. Cap it: still clears the home indicator,
+   without the jump. */
+@media (max-width: 767px) {
+  .mtools { padding-bottom: min(env(safe-area-inset-bottom), 8px); }
+  .page { padding-bottom: calc(62px + min(env(safe-area-inset-bottom), 8px)); }
+}
+
+/* sheet header: Filters — Clear all — ✕ */
+.sheet-hd { display: flex; align-items: center; gap: 12px; }
+.sheet-clear {
+  margin-left: auto; border: 0; background: none; cursor: pointer;
+  font: 600 14px/20px var(--font); color: var(--teal-600); padding: 4px 2px;
+}
+.sheet-clear:hover { color: var(--teal-700); }
+.sheet-x { margin-left: 0; }
+
+/* Apply button pinned under the options, clear of the safe area */
+.sheet-apply {
+  width: 100%; margin-top: 20px; height: 48px;
+  font-size: 16px; font-weight: 600;
+}

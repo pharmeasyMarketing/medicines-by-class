@@ -901,8 +901,14 @@
     // so collect values through uniq() or the state array doubles up
     subBoxes.forEach(function (b) {
       b.addEventListener("change", function () {
-        state.subs = uniq(subBoxes.filter(function (x) { return x.checked; })
-                                  .map(function (x) { return x.value; }));
+        /* Toggle only the value that changed. Every sub-class renders twice —
+           once in the desktop sidebar, once in the mobile sheet — so deriving
+           state by scanning every checked box meant unticking one left the
+           other ticked, apply() re-ticked the first, and the filter could
+           never be cleared. */
+        var i = state.subs.indexOf(b.value);
+        if (b.checked && i === -1) state.subs.push(b.value);
+        else if (!b.checked && i !== -1) state.subs.splice(i, 1);
         apply();
       });
     });
@@ -928,10 +934,11 @@
     if (sortSel) sortSel.addEventListener("change", function () {
       state.sort = sortSel.value; apply();
     });
-    var clearAll = $("[data-clear-filters]");
-    if (clearAll) clearAll.addEventListener("click", function () {
-      state.subs = []; state.forms = []; state.stock = false; state.subst = false;
-      apply();
+    $$("[data-clear-filters]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        state.subs = []; state.forms = []; state.stock = false; state.subst = false;
+        apply();
+      });
     });
 
     /* ---- mobile bottom sheets ------------------------------------------- */
@@ -940,11 +947,15 @@
       if (!el) return;
       el.classList.add("on");
       if (scrim) scrim.classList.add("on");
+      // the fixed Sort|Filter bar is above the sheet in z-order and would sit
+      // right on top of Apply, eating the tap
+      document.body.classList.add("sheet-open");
       document.body.style.overflow = "hidden";
     }
     function closeSheets() {
       $$(".sheet").forEach(function (s) { s.classList.remove("on"); });
       if (scrim) scrim.classList.remove("on");
+      document.body.classList.remove("sheet-open");
       document.body.style.overflow = "";
     }
     if (scrim) scrim.addEventListener("click", closeSheets);
