@@ -189,6 +189,7 @@
       cartLimitNote(true);
       return;
     }
+    if (q < 0) q = 0;
     if (q <= 0) delete cart[sku];
     else cart[sku] = { qty: q, name: card.dataset.name, pack: card.dataset.pack,
                        href: card.dataset.href, price: card.dataset.price,
@@ -368,6 +369,75 @@
       Promise.resolve(handoffToCart());
     });
   }
+
+
+  /* ---------------------------------------------------------------------
+     Quantity picker. The live PDP opens a 0-20 list instead of stepping one
+     at a time, so a month's supply is one tap. Picking 0 clears the line and
+     the card goes back to "Add to cart".
+     NOTE: paintAddControl lives here — it was lost in an earlier refactor
+     while still being called, which threw on every add.
+     --------------------------------------------------------------------- */
+  function paintAddControl(card) {
+    var btn = $(".btn-add", card);
+    if (!btn) return;
+    var q = cartQty(card.dataset.sku);
+    var unavailable = card.dataset.avail !== "in";
+
+    if (!btn.dataset.wired) {
+      btn.dataset.wired = "1";
+      btn.addEventListener("click", function () { if (!btn.disabled) qtyOpen(card); });
+    }
+    if (q > 0 && !unavailable) {
+      btn.className = "btn-add in-cart";
+      btn.disabled = false;
+      btn.textContent = "Qty: " + q;
+    } else {
+      btn.className = "btn-add";
+      btn.disabled = unavailable;
+      btn.textContent = unavailable ? (card.dataset.state || "Out of stock") : "Add to cart";
+    }
+  }
+
+  var qsCard = null;
+  function qtyOpen(card) {
+    var sheet = $("#qty-sheet"), list = $("[data-qs-list]"), sc = $(".scrim");
+    if (!sheet || !list) { cartAdd(card, 1); return; }
+    qsCard = card;
+    var cur = cartQty(card.dataset.sku);
+    var room = CART_MAX - (cartTotalItems() - cur);   // respect the basket cap
+    var max = Math.max(0, Math.min(CART_MAX, room));
+    var out = "";
+    for (var i = 0; i <= max; i++)
+      out += '<button type="button" class="qs-opt' + (i === cur ? " on" : "") +
+             '" data-qs="' + i + '">' + i + '</button>';
+    list.innerHTML = out;
+    sheet.hidden = false;
+    if (sc) sc.classList.add("on");
+    document.body.style.overflow = "hidden";
+  }
+
+  function qtyClose() {
+    var sheet = $("#qty-sheet"), drawer = $("#cart-drawer");
+    if (sheet) sheet.hidden = true;
+    if (!drawer || drawer.hidden) {
+      var sc = $(".scrim"); if (sc) sc.classList.remove("on");
+      document.body.style.overflow = "";
+    }
+    qsCard = null;
+  }
+
+  document.addEventListener("click", function (e) {
+    var opt = e.target.closest && e.target.closest("[data-qs]");
+    if (opt && qsCard) {
+      cartAdd(qsCard, Number(opt.dataset.qs) - cartQty(qsCard.dataset.sku));
+      qtyClose();
+      return;
+    }
+    var sheet = $("#qty-sheet");
+    if (sheet && !sheet.hidden && !e.target.closest("#qty-sheet") && !e.target.closest(".btn-add"))
+      qtyClose();
+  });
 
   /* mobile hamburger -> the same primary nav links as the header */
   (function () {
@@ -801,8 +871,7 @@
 
     // wire the Add buttons that shipped in the HTML
     cards.forEach(function (c) {
-      var b = $(".btn-add", c);
-      if (b) b.addEventListener("click", function () { if (!b.disabled) cartAdd(c, 1); });
+      paintAddControl(c);
     });
 
     apply();

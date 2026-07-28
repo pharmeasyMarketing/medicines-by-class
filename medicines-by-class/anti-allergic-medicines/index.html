@@ -10,6 +10,11 @@
 <meta property="og:description" content="Browse 41 anti-allergic medicines on PharmEasy. Medicines used for allergy-related symptoms. Compare packs, compositions and prices. 100% genuine medicines.">
 <meta property="og:url" content="https://pharmeasy.in/medicines-by-class/anti-allergic-medicines/">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://pharmeasy.in/medicines-by-class/og/anti-allergic-medicines.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://pharmeasy.in/medicines-by-class/og/anti-allergic-medicines.png">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.pharmeasy.in">
 <link rel="stylesheet" href="/medicines-by-class/assets/tokens.css">
@@ -776,9 +781,8 @@
         <div class="card"><h2>Safety information</h2>
           <ul class="checks"><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 12.5 9.5 18 20 6.5"/></svg><span>Some antihistamines cause drowsiness – check before driving or operating machinery.</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 12.5 9.5 18 20 6.5"/></svg><span><strong>Do not self-medicate.</strong> Use medicines only as advised by a qualified doctor.</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 12.5 9.5 18 20 6.5"/></svg><span><strong>Check the strength and dosage form</strong> on your prescription before ordering.</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 12.5 9.5 18 20 6.5"/></svg><span><strong>Tell your doctor about allergies</strong> and about every other medicine or supplement you take.</span></li><li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 12.5 9.5 18 20 6.5"/></svg><span><strong>Do not stop a prescribed medicine</strong> without medical advice, even if you feel better.</span></li></ul>
         </div>
-        <div class="faq-card">
-          <div style="padding:24px 28px 8px"><h2 style="font-size:22px;font-weight:700;margin:0">Frequently Asked Questions</h2></div>
-          <div class="faq-item">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        <div class="faq-card"><div class="faq-item">
       <button type="button" class="faq-q" aria-expanded="true" aria-controls="c-a0">
         <span>Will these make me drowsy?</span><span class="faq-chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
@@ -813,8 +817,7 @@
         <span>Can two medicines from this class be used interchangeably?</span><span class="faq-chev"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
       <p class="faq-a" id="c-a5" hidden>Not necessarily. Medicines in the same class can differ in composition, strength and suitability. Only your doctor or pharmacist can decide whether one may be used in place of another.</p>
-    </div>
-        </div>
+    </div></div>
         <div class="card"><h2>Related classes</h2>
           <div class="rel-list"><a href="https://pharmeasy.in/medicines-by-class/cancer-medicines/"><span>Cancer Medicines</span><span class="n">219 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></span></a><a href="https://pharmeasy.in/medicines-by-class/anti-diabetic-medicines/"><span>Anti-diabetic Medicines</span><span class="n">128 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></span></a><a href="https://pharmeasy.in/medicines-by-class/blood-pressure-medicines/"><span>Blood Pressure Medicines</span><span class="n">123 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></span></a><a href="https://pharmeasy.in/medicines-by-class/gastrointestinal-medicines/"><span>Gastrointestinal Medicines</span><span class="n">103 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></span></a></div>
         </div>
@@ -829,6 +832,10 @@
 </main>
 
 <div class="scrim"></div>
+<div class="qty-sheet" id="qty-sheet" role="dialog" aria-modal="true" aria-label="Select quantity" hidden>
+  <div class="qs-hd">Select Quantity</div>
+  <div class="qs-list" data-qs-list></div>
+</div>
 <aside class="cart-drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-label="Your cart" hidden>
   <div class="cd-hd"><b>Your cart <span data-cd-count>0</span></b>
     <button type="button" class="sheet-x" data-cd-close aria-label="Close">✕</button></div>
