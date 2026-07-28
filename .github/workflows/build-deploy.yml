@@ -108,18 +108,32 @@ jobs:
       - name: Publish build into medicines-by-class/
         run: |
           set -euo pipefail
-          rm -rf medicines-by-class && mkdir -p medicines-by-class
-          cp -R dist/. medicines-by-class/
-          cp dist/manifest.json .deploy-manifest.json
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f medicines-by-class .deploy-manifest.json sheets/
-          if git diff --staged --quiet; then
-            echo "nothing changed"
-          else
+
+          # dist/ is a pure artifact, so on a rejected push we can just reset to
+          # whatever landed and lay it down again. Committing first and then
+          # rebasing would try to merge generated output against generated
+          # output — a push arriving mid-run used to fail the whole workflow.
+          for attempt in 1 2 3; do
+            rm -rf medicines-by-class && mkdir -p medicines-by-class
+            cp -R dist/. medicines-by-class/
+            cp dist/manifest.json .deploy-manifest.json
+            git add -f medicines-by-class .deploy-manifest.json sheets/
+            if git diff --staged --quiet; then
+              echo "nothing changed"; break
+            fi
             git commit -m "build: ${{ steps.diff.outputs.changed }} page(s) changed [skip ci]"
-            git push
-          fi
+            if git push; then
+              echo "published on attempt $attempt"; break
+            fi
+            if [ "$attempt" = 3 ]; then
+              echo "::error::could not publish after 3 attempts"; exit 1
+            fi
+            echo "push rejected — resyncing and retrying"
+            git fetch origin main
+            git reset --hard origin/main
+          done
 
       # ---- 4. preview build, from the SAME sheet + snapshot -------------
       - name: Build (GitHub Pages preview)
