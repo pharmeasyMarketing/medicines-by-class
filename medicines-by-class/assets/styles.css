@@ -1133,3 +1133,49 @@ header { box-shadow: var(--sh-sm); }
   .sortwrap { display: none; }
 }
 .toolbar { background: none; border: 0; border-radius: 0; justify-content: flex-start; }
+
+/* ==========================================================================
+   BREADCRUMB · LIST HEAD + SORT · MOBILE SORT/FILTER BAR
+   ========================================================================== */
+/* live breadcrumb: chevron separators, last crumb teal */
+.crumbs ol { font-size: 14px; line-height: 20px; gap: 6px; }
+.crumbs a { color: var(--fg-1); font-weight: var(--fw-semi); text-transform: none; }
+.crumbs a:hover { color: var(--teal-600); }
+.crumbs .crumb-sep { display: flex; align-items: center; color: var(--fg-3); }
+.crumbs [aria-current] { color: var(--teal-600); font-weight: var(--fw-semi); text-transform: none; }
+
+/* heading left, "Sort By:" + select right, on one row */
+.list-head { display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; margin: 24px 0 4px; }
+.list-title { margin: 0; font-size: 22px; line-height: 30px; font-weight: var(--fw-bold); }
+.sortwrap { margin-left: auto; display: flex; align-items: center; gap: 10px;
+  font-size: 14px; color: var(--fg-2); }
+.sortwrap span { white-space: nowrap; }
+.sortwrap select { height: 44px; min-width: 190px; padding: 0 14px;
+  border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface);
+  font-size: 15px; font-weight: var(--fw-regular); color: var(--fg-1); cursor: pointer; }
+.toolbar { padding: 0 0 12px; }
+
+@media (max-width: 767px) {
+  .crumbs { margin: 8px 16px 0; padding: 0; }
+  .crumbs ol { font-size: 13px; line-height: 18px; }
+  .list-head { margin: 16px 12px 4px; }
+  .list-title { font-size: 18px; line-height: 26px; }
+  .sortwrap { display: none; }
+
+  /* live mobile pattern: a fixed Sort | Filter bar pinned to the bottom */
+  .mtools { position: fixed; left: 0; right: 0; bottom: 0; z-index: 75;
+    display: flex; background: var(--surface); border-top: 1px solid var(--line-2);
+    box-shadow: 0 -4px 16px rgba(48,54,60,.08);
+    padding-bottom: env(safe-area-inset-bottom); margin: 0; }
+  .mtool { flex: 1; height: 54px; border: 0; border-radius: 0; background: none;
+    justify-content: center; gap: 8px; font-size: 16px; font-weight: var(--fw-semi);
+    color: var(--fg-1); position: relative; }
+  .mtool + .mtool::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px;
+    width: 1px; background: var(--line-2); }
+  .mtool.has-filters::after { content: ""; position: absolute; top: 14px; right: 22px;
+    width: 7px; height: 7px; border-radius: 50%; background: #e5187a; }
+  .mtool.has-filters { border-color: transparent; color: var(--fg-1); }
+  .page { padding-bottom: 66px; }         /* clear the fixed bar */
+  .totop { bottom: 66px; }
+}

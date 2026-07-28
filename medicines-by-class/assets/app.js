@@ -414,9 +414,9 @@
         if (panel) panel.hidden = false;
       } else {
         btn.removeAttribute("tabindex");
-        var open = i === 0;
-        btn.setAttribute("aria-expanded", String(open));
-        if (panel) panel.hidden = !open;
+        // live footer starts fully collapsed on mobile
+        btn.setAttribute("aria-expanded", "false");
+        if (panel) panel.hidden = true;
       }
     });
   }
