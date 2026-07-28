@@ -917,9 +917,13 @@ let ogCount = 0;
 try {
   const r = spawnSync("python3", [path.join(ROOT, "src", "prep", "make_og.py")], { encoding: "utf-8" });
   if (r.status === 0) ogCount = (fs.existsSync(path.join(DIST, "og")) ? fs.readdirSync(path.join(DIST, "og")).length : 0);
-  else console.warn(`  ! og cards skipped: ${(r.stderr || "").trim().split("\n").pop() || "python3/Pillow unavailable"}`);
-} catch {
-  console.warn("  ! og cards skipped: python3 not found");
+  else throw new Error((r.stderr || "").trim().split("\n").pop() || "python3/Pillow unavailable");
+} catch (e) {
+  // Locally this is a warning so a build still works without Pillow. In CI it
+  // is fatal: shipping pages whose og:image 404s is worse than a red run.
+  const msg = `og cards not generated: ${e.message}`;
+  if (process.env.CI) { console.error(`  ✗ ${msg}`); process.exit(1); }
+  console.warn(`  ! ${msg} (install Pillow: pip install Pillow)`);
 }
 
 console.log(`classes            : ${classes.length}`);

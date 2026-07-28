@@ -35,6 +35,13 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: "20" }
 
+      # build.mjs shells out to make_og.py for the share cards. It warns and
+      # carries on without Pillow, so a missing install would quietly ship
+      # pages whose og:image 404s.
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install --quiet "Pillow>=10"
+
       # ---- 1. the sheet is the source of truth -------------------------
       - name: Fetch sheet tabs
         env:
