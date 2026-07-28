@@ -231,8 +231,8 @@ const footer = () => {
   const group = ([title, links]) => {
     const id = `ft-${++gid}`;
     return `<div class="ft-group">
-        <div class="ft-title"><button type="button" class="ft-toggle" aria-expanded="true" aria-controls="${id}">${esc(title)}<span class="ft-chev">${chevDown(18, 2)}</span></button></div>
-        <ul class="ft-list" id="${id}">${links.map(l => `<li><a href="${CFG.origin}/">${esc(l)}</a></li>`).join("")}</ul>
+        <div class="ft-title"><button type="button" class="ft-toggle" aria-expanded="false" aria-controls="${id}">${esc(title)}<span class="ft-chev">${chevDown(18, 2)}</span></button></div>
+        <ul class="ft-list" id="${id}" data-ft-list>${links.map(l => `<li><a href="${CFG.origin}/">${esc(l)}</a></li>`).join("")}</ul>
       </div>`;
   };
   return `
@@ -482,7 +482,7 @@ ${header()}
 <main class="page" data-directory>
   <div class="container">
     <nav class="crumbs" aria-label="Breadcrumb">
-      <ol><li><a href="${CFG.origin}/">Home</a></li><li aria-hidden="true">›</li>
+      <ol><li><a href="${CFG.origin}/">Home</a></li><li aria-hidden="true" class="crumb-sep"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></li>
       <li><span aria-current="page">Medicines by Class</span></li></ol>
     </nav>
 
@@ -671,8 +671,8 @@ ${header()}
   <div class="cart-banner" data-cart-banner hidden></div>
   <div class="container">
     <nav class="crumbs" aria-label="Breadcrumb">
-      <ol><li><a href="${CFG.origin}/">Home</a></li><li aria-hidden="true">›</li>
-      <li><a href="${CFG.origin}${CFG.base}/">Medicines by Class</a></li><li aria-hidden="true">›</li>
+      <ol><li><a href="${CFG.origin}/">Home</a></li><li aria-hidden="true" class="crumb-sep"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></li>
+      <li><a href="${CFG.origin}${CFG.base}/">Medicines by Class</a></li><li aria-hidden="true" class="crumb-sep"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></li>
       <li><span aria-current="page">${esc(cl.class_name)}</span></li></ol>
     </nav>
 
@@ -725,19 +725,19 @@ ${header()}
       </aside>
 
       <div>
-        <h2 class="list-title">Medicines in this class</h2>
-        <div class="toolbar">
-          <div>
-            <span class="sub" data-med-count>${total} medicines · prices include applicable discounts</span>
-          </div>
-          <label class="sortwrap">Sort by
+        <div class="list-head">
+          <h2 class="list-title">Medicines in this class</h2>
+          <label class="sortwrap"><span>Sort By:</span>
             <select id="sort" aria-label="Sort medicines">
-              <option value="relevance">Relevance</option>
+              <option value="relevance">Popularity</option>
               <option value="price-asc">Price: low to high</option>
               <option value="price-desc">Price: high to low</option>
               <option value="discount">Discount</option>
             </select>
           </label>
+        </div>
+        <div class="toolbar">
+          <span class="sub" data-med-count>${total} medicines · prices include applicable discounts</span>
           <div class="mtools">
             <button type="button" class="mtool" data-sort-btn><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="17" x2="14" y2="17"/></svg>Sort</button>
             <button type="button" class="mtool" data-filter-btn><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="6" x2="19" y2="6"/><circle cx="15" cy="6" r="2.2"/><line x1="5" y1="13" x2="19" y2="13"/><circle cx="9" cy="13" r="2.2"/><line x1="5" y1="20" x2="19" y2="20"/><circle cx="16" cy="20" r="2.2"/></svg>Filter</button>
