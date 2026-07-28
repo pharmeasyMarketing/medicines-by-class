@@ -1043,3 +1043,41 @@ header { box-shadow: var(--sh-sm); }
 /* filter pills on the toolbar row, live styling */
 .mtool { height: 36px; border-radius: var(--r-pill); border: 1px solid var(--line);
   font-size: 13px; font-weight: var(--fw-medium); color: var(--fg-1); gap: 6px; }
+
+/* ==========================================================================
+   MOBILE NAVBAR — hamburger + cart matched to the live app bar
+   ========================================================================== */
+@media (max-width: 767px) {
+  .mhdr-row { height: 56px; padding: 0 12px 0 14px; gap: 8px; align-items: center; }
+
+  /* two stacked bars, short coral over long dark — the live mark */
+  .mhdr-burger { width: 30px; height: 44px; justify-content: flex-start; padding: 0; }
+  .mhdr-burger svg { display: block; }
+
+  .mhdr-logo { flex: 0 0 auto; margin-left: 4px; }
+  .mhdr-logo img { height: 30px; }
+  .mhdr-row .hdr-spacer { flex: 1 1 auto; }
+
+  /* cart sits hard against the right edge */
+  /* push to the right edge with auto margin — the old spacer div was removed
+     when the logo was centred, so flex:1 had nothing to grow */
+  .mhdr-cart { position: relative; width: 40px; height: 44px;
+    margin-left: auto; margin-right: 0;
+    justify-content: flex-end; color: var(--fg-1); }
+  .mhdr-cart .cart-count {
+    position: absolute; top: 4px; right: -4px;
+    min-width: 18px; height: 18px; padding: 0 5px;
+    background: var(--teal-600); color: #fff;
+    font-size: 11px; font-weight: var(--fw-bold);
+    border-radius: var(--r-pill); border: 2px solid #fff;
+    align-items: center; justify-content: center;
+  }
+}
+
+/* sidebar filter groups collapse, like the live left rail */
+.side-h { display: flex; align-items: center; justify-content: space-between;
+  font-size: 14px; font-weight: var(--fw-semi); color: var(--fg-1); }
+.side-h::after { content: ""; width: 8px; height: 8px; flex: none;
+  border-right: 2px solid var(--fg-3); border-bottom: 2px solid var(--fg-3);
+  transform: rotate(45deg); margin-top: -4px; }
+.side-top b { font-size: 16px; font-weight: var(--fw-bold); }
