@@ -149,9 +149,23 @@ const cat = c => CATS[c] || ["#EEF2F6", "#5C6773"];
 
 /* ------------------------------------------------------------ chrome ----- */
 // [label, slug] – slugs are the live pharmeasy.in paths, not derived from the label
-const NAV = [["Medicine", "medicine"], ["Healthcare", "healthcare"],
-  ["Doctor Consult", "online-doctor-consultation"], ["Lab Tests", "lab-tests"],
-  ["PLUS", "plus"], ["Health Insights", "health-insights"], ["Offers", "offers"]];
+// [label, href|null, children?] – paths are the live pharmeasy.in ones.
+// A null href means the item only opens a dropdown and is not itself a link.
+const NAV = [
+  ["Medicine", "/medicine"],
+  ["Healthcare", "/healthcare"],
+  ["Generic Medicines", "/generics"],
+  ["Doctor Consult", "/online-doctor-consultation"],
+  ["Lab Tests", "/diagnostics?src=homecard", [
+    ["All Tests", "/diagnostics/all-tests"],
+    ["Health Packages", "/diagnostics/health-checkup-packages"],
+  ]],
+  ["Health Insights", null, [
+    ["Blog Articles", "/blog"],
+    ["Chronic Conditions", "/conditions"],
+    ["AskEasy", "/qna"],
+  ]],
+];
 const LOGO = "https://assets.pharmeasy.in/apothecary/images/logo_big.svg";
 
 const FOOTER_COLS = [
@@ -198,7 +212,33 @@ const PE_CART = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" ari
 
 const PE_WORDMARK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 106 20" width="106" height="29" role="img" aria-label="PharmEasy"><path fill-rule="evenodd" clip-rule="evenodd" d="M28.7773 11.115H30.3824C31.6507 11.115 32.391 10.4755 32.391 9.29928C32.391 8.10821 31.6655 7.46875 30.3898 7.46875H28.7773V11.115ZM30.9715 5.66602C33.1488 5.66602 34.6372 7.11134 34.6372 9.29057C34.6372 11.4478 33.0902 12.8934 30.8616 12.8934H28.7727V16.1471H26.5586V5.66602H30.9715Z" fill="#10847E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M35.9316 5.07617H38.0282V9.44866H38.1603C38.5339 8.53326 39.4137 7.98164 40.6011 7.98164C42.3385 7.98164 43.3721 9.06372 43.3721 10.9887V16.1456H41.2389V11.4898C41.2389 10.3786 40.7184 9.80477 39.7508 9.80477C38.6802 9.80477 38.0646 10.5093 38.0646 11.548V16.1456H35.9316V5.07617Z" fill="#10847E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M49.7954 13.2466V12.6582L48.1605 12.7601C47.2442 12.8254 46.7969 13.1521 46.7969 13.726C46.7969 14.3215 47.3176 14.685 48.058 14.685C49.0477 14.685 49.7954 14.0601 49.7954 13.2466ZM44.709 13.8631C44.709 12.4106 45.8303 11.5677 47.8391 11.4516L49.7964 11.3352V10.6817C49.7964 10.0131 49.3124 9.63558 48.4325 9.63558C47.6629 9.63558 47.1498 9.89697 46.9741 10.3764H45.0094C45.1484 8.89479 46.5194 7.96484 48.5498 7.96484C50.6908 7.96484 51.9001 8.96729 51.9001 10.6817V16.1508H49.8331V15.105H49.701C49.2833 15.8389 48.4035 16.2746 47.3551 16.2746C45.801 16.2746 44.709 15.3301 44.709 13.8631Z" fill="#10847E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M53.7012 8.13487H55.7684V9.41325H55.8999C56.1129 8.614 56.9486 8.00391 57.9748 8.00391C58.2681 8.00391 58.6274 8.04042 58.8105 8.10603V10.0305C58.6417 9.9654 58.1434 9.89979 57.7991 9.89979C56.6337 9.89979 55.8342 10.5826 55.8342 11.7086V16.1462H53.7012V8.13487Z" fill="#10847E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M60.041 8.13555H62.108V9.44277H62.2398C62.5698 8.52764 63.4129 7.96094 64.4758 7.96094C65.6119 7.96094 66.389 8.51309 66.7116 9.44277H66.8437C67.2173 8.54933 68.1484 7.96094 69.2771 7.96094C70.8901 7.96094 71.8941 8.99962 71.8941 10.6487V16.1469H69.7611V11.208C69.7611 10.2563 69.3141 9.78406 68.4126 9.78406C67.5473 9.78406 66.9903 10.3942 66.9903 11.2445V16.1469H64.9374V11.1209C64.9374 10.2709 64.4391 9.78406 63.6031 9.78406C62.7677 9.78406 62.174 10.4309 62.174 11.3241V16.1469H60.041V8.13555Z" fill="#10847E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M80.883 16.1468H73.875V5.66602H80.883V7.53967H76.0888V9.98771H80.6119V11.7233H76.0888V14.2729H80.883V16.1468Z" fill="#10847E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M87.061 13.2466V12.6582L85.4261 12.7601C84.5101 12.8254 84.0625 13.1521 84.0625 13.726C84.0625 14.3215 84.5833 14.685 85.3236 14.685C86.3133 14.685 87.061 14.0601 87.061 13.2466ZM81.9746 13.8631C81.9746 12.4106 83.0959 11.5677 85.1047 11.4516L87.062 11.3352V10.6817C87.062 10.0131 86.5782 9.63558 85.6984 9.63558C84.9288 9.63558 84.4154 9.89697 84.2397 10.3764H82.275C82.414 8.89479 83.785 7.96484 85.8155 7.96484C87.9564 7.96484 89.1659 8.96729 89.1659 10.6817V16.1508H87.0987V15.105H86.9666C86.5489 15.8389 85.6691 16.2746 84.621 16.2746C83.0669 16.2746 81.9746 15.3301 81.9746 13.8631Z" fill="#10847E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M93.8439 7.96094C95.8968 7.96094 97.1064 8.81072 97.2234 10.3436H95.2514C95.1414 9.82798 94.6505 9.50812 93.8587 9.50812C93.0962 9.50812 92.5318 9.84994 92.5318 10.3582C92.5318 10.7503 92.8763 10.99 93.6241 11.1572L95.1414 11.4836C96.7103 11.8255 97.4142 12.4792 97.4142 13.6774C97.4142 15.2751 95.97 16.3218 93.8513 16.3218C91.7183 16.3218 90.4279 15.4572 90.2812 13.9174H92.3632C92.5244 14.4621 93.0452 14.7743 93.8951 14.7743C94.7237 14.7743 95.2955 14.4328 95.2955 13.9174C95.2955 13.525 94.9874 13.2853 94.2764 13.1329L92.8106 12.8057C91.2417 12.4644 90.4791 11.7236 90.4791 10.4889C90.4791 8.97052 91.8282 7.96094 93.8439 7.96094Z" fill="#10847E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M98.536 19.0351V17.3355C98.6092 17.3503 98.9318 17.3503 99.0196 17.3503C99.8185 17.3503 100.273 17.0958 100.449 16.4857L100.523 16.1955L97.6855 8.13281H100.039L101.739 14.2049H101.871L103.572 8.13281H105.83L103.044 16.268C102.355 18.3308 101.365 19.057 99.3496 19.057C99.2687 19.057 98.624 19.0499 98.536 19.0351Z" fill="#10847E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M10.0053 10.2162C9.51276 9.74317 8.80045 9.75058 8.31535 10.2088C7.30764 11.1549 6.32266 12.1232 5.33741 13.0844C5.04968 13.3696 4.93581 13.7302 5.0267 14.1278C5.23146 15.1115 6.40589 15.4721 7.17131 14.7813C7.78508 14.218 8.36846 13.64 8.9595 13.0545C9.14154 12.8743 9.25516 12.8365 9.45966 13.0394C10.3614 13.9402 11.2859 14.8263 12.218 15.6972C12.4225 15.8925 12.3998 16.0052 12.1953 16.1854C11.5966 16.7484 10.9979 17.3264 10.4069 17.9048C10.0206 18.2876 9.94475 18.7606 10.1493 19.2488C10.3538 19.7443 10.7704 19.9771 11.2027 19.9996C11.6421 20.007 11.9451 19.9094 12.1726 19.6766C13.1726 18.7231 14.1729 17.777 15.1505 16.801C15.6203 16.328 15.6203 15.6448 15.1429 15.1792C13.4379 13.505 11.7329 11.8605 10.0053 10.2162Z" fill="#10847E"/><path fill-rule="evenodd" clip-rule="evenodd" d="M18.5827 11.7247C18.257 11.4096 17.9386 11.0715 17.5901 10.7712C17.3552 10.5685 17.3021 10.4259 17.5069 10.1331C18.2266 9.08934 18.56 7.90303 18.5751 6.63417C18.5751 6.09366 18.4995 5.56797 18.3856 5.04994C17.105 0.117107 10.8233 -1.67745 7.04194 1.82144C5.87491 2.90246 4.74593 4.02131 3.60189 5.12508C2.53342 6.16112 1.45754 7.18976 0.396465 8.2258C0.0252464 8.5864 -0.0960272 9.02188 0.0783531 9.51715C0.252469 10.0127 0.63135 10.268 1.14683 10.3357C1.59388 10.3881 1.96509 10.2005 2.27581 9.88542C4.37471 7.85805 6.48128 5.83094 8.57278 3.80357C9.62594 2.77494 10.8688 2.36195 12.3312 2.51222C14.5892 2.75986 16.3018 4.91475 15.9911 7.11462C15.8471 8.09828 15.423 8.91684 14.703 9.60736C14.1648 10.1331 14.1043 10.8312 14.5892 11.3268C15.3242 12.0927 16.0973 12.8359 16.8854 13.5491C17.3853 14 18.1735 13.9322 18.6358 13.4515C19.1056 12.9486 19.0903 12.2427 18.5827 11.7247Z" fill="#10847E"/></svg>`;
 
-const NAV_CHEV = new Set(["Healthcare", "Lab Tests", "Health Insights"]);
+
+
+/** A named reviewer is a Person, with their profile as `url` — that pairing is
+ *  what Google reads for health-content authorship. Only the generic fallback
+ *  ("Reviewed by medical experts") is an Organization. */
+const reviewerNode = (c) => {
+  if (!c.reviewer_name) return { "@type": "Organization", name: CFG.reviewer };
+  const n = { "@type": "Person", name: c.reviewer_name };
+  if (c.reviewer_credentials) n.jobTitle = c.reviewer_credentials;
+  const u = (c.reviewer_profile_url || "").trim();
+  if (u) n.url = u;
+  return n;
+};
+
+const SHIELD = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.6l7 2.8v5c0 4.2-2.9 7.4-7 8.8-4.1-1.4-7-4.6-7-8.8v-5z"/><polyline points="8.8 12.2 11.2 14.6 15.4 10.2"/></svg>`;
+
+/* "Reviewed by" stays the emphasised bit; the reviewer's own name is set light,
+   and links to their profile when the sheet supplies one. */
+const reviewedBy = (c) => {
+  if (!c.reviewer_name) return `<b>${esc(CFG.reviewer)}</b>`;
+  const who = esc(c.reviewer_name) + (c.reviewer_credentials ? ", " + esc(c.reviewer_credentials) : "");
+  const url = (c.reviewer_profile_url || "").trim();
+  const name = url
+    ? `<a class="cred-name" href="${esc(url)}" rel="author">${who}</a>`
+    : `<span class="cred-name">${who}</span>`;
+  return `<b>Reviewed by</b>&nbsp;${name}`;
+};
 
 const header = () => `
 <header>
@@ -208,7 +248,16 @@ const header = () => `
         <img src="${LOGO}" alt="PharmEasy" width="164" height="30">
       </a>
       <nav class="hdr-nav pe-scroll" aria-label="Primary">
-        ${NAV.map(([n, slug], i) => `<a href="${CFG.origin}/${slug}"${i === 0 ? ' aria-current="page"' : ""}>${esc(n)}${NAV_CHEV.has(n) ? chevDown(13, 2.4) : ""}</a>`).join("\n        ")}
+        ${NAV.map(([n, href, kids]) => {
+          const label = esc(n) + (kids ? chevDown(13, 2.4) : "");
+          const top = href
+            ? `<a href="${CFG.origin}${href}">${label}</a>`
+            : `<span class="nav-top" role="button" tabindex="0">${label}</span>`;
+          if (!kids) return `<div class="nav-item">${top}</div>`;
+          return `<div class="nav-item has-kids">${top}<div class="nav-drop"><ul>${
+            kids.map(([kn, kh]) => `<li><a href="${CFG.origin}${kh}">${esc(kn)}</a></li>`).join("")
+          }</ul></div></div>`;
+        }).join("\n        ")}
       </nav>
       <div class="hdr-spacer"></div>
       <a class="hdr-cart" href="${CFG.cartUrl}" data-cart-link>
@@ -230,7 +279,13 @@ const header = () => `
       </a>
     </div>
     <nav class="mhdr-menu" id="m-menu" aria-label="Primary" hidden>
-      ${NAV.map(([n, slug]) => `<a href="${CFG.origin}/${slug}">${esc(n)}${chev(15, 2.4)}</a>`).join("")}
+      ${NAV.map(([n, href, kids]) => {
+        const parent = href
+          ? `<a href="${CFG.origin}${href}">${esc(n)}${chev(15, 2.4)}</a>`
+          : `<span class="m-head">${esc(n)}</span>`;
+        return parent + (kids ? kids.map(([kn, kh]) =>
+          `<a class="m-sub" href="${CFG.origin}${kh}">${esc(kn)}${chev(15, 2.4)}</a>`).join("") : "");
+      }).join("")}
     </nav>
   </div>
 </header>`;
@@ -319,9 +374,9 @@ const siteNode = () => ({
   },
 });
 
-/** MedicalWebPage carries lastReviewed / reviewedBy, which is the pair Google
- *  documents for health content. Worth more here than any product markup. */
-const medicalPageNode = ({ url, name, desc, reviewer, credentials, reviewed, updated, about }) => {
+/** MedicalWebPage carries reviewedBy, which is what Google documents for
+ *  health content. Worth more here than any product markup. */
+const medicalPageNode = ({ url, name, desc, reviewedBy, about }) => {
   const n = {
     "@type": "MedicalWebPage",
     "@id": url + "#webpage",
@@ -332,12 +387,7 @@ const medicalPageNode = ({ url, name, desc, reviewer, credentials, reviewed, upd
     audience: { "@type": "MedicalAudience", audienceType: "Patient" },
     specialty: "https://schema.org/Pharmacologic",
   };
-  if (updated) { n.lastReviewed = updated; n.dateModified = updated; }
-  if (reviewer) {
-    n.reviewedBy = credentials
-      ? { "@type": "Person", name: reviewer, jobTitle: credentials }
-      : { "@type": "Organization", name: reviewer };
-  }
+  if (reviewedBy) n.reviewedBy = reviewedBy;
   if (about) n.about = about;
   return n;
 };
@@ -520,11 +570,9 @@ ${header()}
         </div>
         <p class="hero-note"><span data-count aria-live="polite">${classes.length} of ${classes.length} classes</span> · Medicine information is for general awareness. Always consult a qualified healthcare professional before starting or changing any medicine.</p>
         <div class="hero-cred">
-          <span class="cred-by"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.6l7 2.8v5c0 4.2-2.9 7.4-7 8.8-4.1-1.4-7-4.6-7-8.8v-5z"/><polyline points="8.8 12.2 11.2 14.6 15.4 10.2"/></svg>${esc(c.reviewer_name || CFG.reviewer)}</span>
+          <span class="cred-by">${SHIELD}${reviewedBy(c)}</span>
           <span class="cred-sep"></span>
-          <span class="cred-date">Last updated: ${esc(c.content_last_updated)}</span>
-          <span class="cred-sep"></span>
-          <a href="${CFG.origin}/editorial-policy">Editorial policy</a>
+          <a href="${CFG.origin}/legal/editorial-policy">Editorial policy</a>
         </div>
       </div>
     </div>
@@ -627,8 +675,7 @@ ${footer()}`;
     siteNode(),
     medicalPageNode({
       url: canonical, name: "Medicines by Class", desc: c.meta_description,
-      reviewer: c.reviewer_name || CFG.reviewer, credentials: c.reviewer_credentials,
-      reviewed: c.medically_reviewed_on, updated: c.content_last_updated,
+      reviewedBy: reviewerNode(c),
     }),
     { "@type": "BreadcrumbList", "@id": canonical + "#breadcrumb", itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: CFG.origin + "/" },
@@ -704,11 +751,9 @@ ${header()}
             ${bool(cl.rx_required) ? '<span class="dot"></span><span class="pill-muted">Prescription required</span>' : ""}
           </div>
           <div class="chero-cred">
-            <span class="cred-by"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.6l7 2.8v5c0 4.2-2.9 7.4-7 8.8-4.1-1.4-7-4.6-7-8.8v-5z"/><polyline points="8.8 12.2 11.2 14.6 15.4 10.2"/></svg>${c.reviewer_name ? "Reviewed by " + esc(c.reviewer_name) + (c.reviewer_credentials ? ", " + esc(c.reviewer_credentials) : "") : esc(CFG.reviewer)}</span>
+            <span class="cred-by">${SHIELD}${reviewedBy(c)}</span>
             <span class="cred-sep"></span>
-            <span class="cred-date">Last updated: ${esc(c.content_last_updated)}</span>
-            <span class="cred-sep"></span>
-            <a href="${CFG.origin}/editorial-policy">Editorial policy</a>
+            <a href="${CFG.origin}/legal/editorial-policy">Editorial policy</a>
           </div>
           <div class="chero-chips">
             <span>${tick(15, 2.2)}100% genuine medicines</span>
@@ -846,8 +891,7 @@ ${footer()}`;
       siteNode(),
       medicalPageNode({
         url: canonical, name: cl.class_name, desc: c.meta_description,
-        reviewer: c.reviewer_name || CFG.reviewer, credentials: c.reviewer_credentials,
-        reviewed: c.medically_reviewed_on, updated: c.content_last_updated,
+        reviewedBy: reviewerNode(c),
         about: [
           { "@type": "DrugClass", name: cl.class_name, "@id": canonical + "#drugclass" },
           ...conditions,

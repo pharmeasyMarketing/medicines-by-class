@@ -1271,3 +1271,62 @@ header { box-shadow: var(--sh-sm); }
 /* caret on the in-cart button */
 .btn-add.in-cart{ display:inline-flex; align-items:center; justify-content:center; gap:6px; }
 .btn-add .qc{ width:10px; height:6px; flex:none; }
+
+/* ============================================================
+   Navigation dropdowns + credibility line       (round 13)
+   ============================================================ */
+
+/* No page in this directory IS the Medicine page, so nothing in the primary
+   nav should read as current. */
+.hdr-nav a[aria-current] { border-bottom: 0; }
+
+.hdr-nav { display: flex; align-items: center; }
+.nav-item { position: relative; display: flex; align-items: center; }
+.nav-item > a, .nav-top {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 14px; font-weight: 700; color: var(--fg-1);
+  padding: 6px 2px; cursor: pointer; white-space: nowrap;
+}
+.nav-item > a:hover, .nav-top:hover { color: var(--teal-700); text-decoration: none; }
+
+/* Panel opens on hover and on keyboard focus, so it is reachable by tab. */
+.nav-drop {
+  position: absolute; top: 100%; left: 0; z-index: 60;
+  min-width: 196px; padding: 6px 0; margin-top: 6px;
+  background: #fff; border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(16,24,32,.16), 0 0 0 1px rgba(16,24,32,.06);
+  opacity: 0; visibility: hidden; transform: translateY(-4px);
+  /* visibility flips instantly on open and only lags on close, so the panel is
+     clickable the moment it appears rather than 140ms later */
+  transition: opacity .14s, transform .14s, visibility 0s linear .14s;
+}
+.nav-item.has-kids:hover .nav-drop,
+.nav-item.has-kids:focus-within .nav-drop {
+  opacity: 1; visibility: visible; transform: translateY(0);
+  transition: opacity .14s, transform .14s, visibility 0s;
+}
+.nav-drop ul { list-style: none; margin: 0; padding: 0; }
+.nav-drop a {
+  display: block; padding: 9px 16px;
+  font-size: 14px; font-weight: 400; line-height: 20px; color: var(--fg-1);
+}
+.nav-drop a:hover { background: #f5f7f8; color: var(--teal-700); text-decoration: none; }
+
+/* the chevron only ever appears on items that actually open a panel */
+.nav-item.has-kids > a svg, .nav-top svg { transition: transform .14s; }
+.nav-item.has-kids:hover > a svg, .nav-item.has-kids:hover .nav-top svg { transform: rotate(180deg); }
+
+/* mobile: section label plus indented children */
+.mhdr-menu .m-head {
+  display: block; padding: 13px 16px 6px;
+  font-size: 12px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--fg-3);
+}
+.mhdr-menu .m-sub { padding-left: 28px; font-weight: 400; }
+
+/* "Reviewed by" carries the emphasis; the person's name is set light */
+.cred-by { font-weight: 400; }
+.cred-by b { font-weight: 700; }
+.cred-name { font-weight: 400; color: inherit; }
+a.cred-name { text-decoration: underline; text-underline-offset: 2px; }
+a.cred-name:hover { color: var(--teal-700); }
