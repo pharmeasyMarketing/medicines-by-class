@@ -9,7 +9,7 @@ name: Build and deploy Medicines by Class
 
 on:
   schedule:
-    - cron: "30 20 * * *"        # 02:00 IST nightly
+    - cron: "30 18 * * *"        # 00:00 IST nightly — prices must be a day old at most
   repository_dispatch:
     types: [sheet-updated]        # fired by the Apps Script on sheet edit
   workflow_dispatch:
@@ -53,10 +53,10 @@ jobs:
         run: node src/validate.mjs
 
       # ---- 2. one snapshot, shared by both builds ----------------------
+      # Reads the numbers the PDP itself renders and writes them into
+      # sheets/02_medicines.csv, which the build then reads.
       - name: Snapshot prices
-        env:
-          PRICE_API: ${{ secrets.PRICE_API_TEMPLATE || 'https://api.pharmeasy.in/v5/product-details/{id}/dynamic' }}
-        run: node src/snapshot.mjs --concurrency 10
+        run: node src/snapshot.mjs --concurrency 8
 
       # ---- 3. production build ------------------------------------------
       - name: Build (production)
@@ -64,7 +64,6 @@ jobs:
           SITE_ORIGIN: ${{ vars.SITE_ORIGIN || 'https://pharmeasy.in' }}
           SITE_BASE:   ${{ vars.SITE_BASE   || '/medicines-by-class' }}
           ASSET_BASE:  ${{ vars.ASSET_BASE  || '/medicines-by-class/assets' }}
-          PRICE_API:   ${{ vars.PUBLIC_PRICE_API || 'https://api.pharmeasy.in/v5/product-details/{id}/dynamic' }}
         run: node src/build.mjs
 
       - name: Diff against last deploy

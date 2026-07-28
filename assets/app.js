@@ -522,6 +522,19 @@
       }
     });
     bar.addEventListener("keydown", function (e) { if (e.key === "Escape") { close(); btn.focus(); } });
+
+    // Scrolling away should put the bar back — it covers content and the
+    // header is sticky, so leaving it open follows the reader down the page.
+    // Ignore the scroll the keyboard itself causes when the field is focused.
+    var lastY = window.pageYOffset;
+    addEventListener("scroll", function () {
+      if (bar.hidden) { lastY = window.pageYOffset; return; }
+      var y = window.pageYOffset;
+      if (Math.abs(y - lastY) > 24 && document.activeElement !== $("input[type=search]", bar)) {
+        close();
+      }
+      lastY = y;
+    }, { passive: true });
     document.addEventListener("click", function (e) {
       if (bar.hidden) return;
       if (!e.target.closest("#m-search") && !e.target.closest("[data-search-btn]")) close();
@@ -973,119 +986,19 @@
      snapshot, so a failure here leaves the last known price on screen
      rather than blanking the grid.
      ======================================================================= */
+  /* Prices are baked in at build time from the nightly snapshot, so there is
+     nothing to hydrate. This used to re-fetch every card from the dynamic
+     product API, but that endpoint's discountPercent does not on its own
+     explain the price a customer is charged, and it is CORS-locked to
+     pharmeasy.in origins besides. Kept as a stub so the sort/filter pass
+     still gets its one settle callback. */
   function makeHydrator(done) {
-    var cfg = window.PE_CONFIG || {};
-    var rupee = function (n) {
-      return "₹" + (Math.round(n * 100) / 100).toFixed(2).replace(/\.00$/, "");
+    var fired = false;
+    return function () {
+      if (fired) return;
+      fired = true;
+      if (done) setTimeout(done, 0);
     };
-    var queue = [], active = 0, MAX = 6, changed = false, settle = null;
-
-    function enqueue(cards) {
-      if (!cfg.priceApi) return;
-      cards.forEach(function (c) {
-        if (c.dataset.hydrated) return;
-        c.dataset.hydrated = "queued";
-        c.classList.add("is-loading");
-        queue.push(c);
-      });
-      next();
-    }
-
-    function next() {
-      if (!queue.length) {
-        if (!active && changed) {
-          changed = false;
-          // re-run once the batch settles so price sorts see real numbers
-          clearTimeout(settle);
-          settle = setTimeout(function () { if (done) done(); }, 60);
-        }
-        return;
-      }
-      if (active >= MAX) return;
-      var card = queue.shift();
-      active++;
-      var url = cfg.priceApi.replace("{id}", encodeURIComponent(card.dataset.sku));
-
-      fetch(url, { headers: { accept: "application/json" }, credentials: "omit" })
-        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(function (d) { paint(card, d); changed = true; })
-        .catch(function () {
-          // CORS or network failure -- keep the build-time snapshot on screen
-          card.classList.remove("is-loading");
-        })
-        .then(function () { card.dataset.hydrated = "1"; active--; next(); });
-
-      next();
-    }
-
-    function paint(card, d) {
-      card.classList.remove("is-loading");
-      var mrp  = parseFloat(d.costPrice);
-      var apiSale = parseFloat(d.salePrice);
-      // ADDITIVE on the API's discountPercent, off MRP -- identical to the
-      // build, so hydration never changes the number on screen.
-      var extra = Number(cfg.extraOffPct) || 0;
-      var pct = parseFloat(d.discountPercent);
-      if (!isFinite(pct) && isFinite(mrp) && isFinite(apiSale) && mrp > 0)
-        pct = (1 - apiSale / mrp) * 100;
-      var offPct = Math.min(95, Math.round(pct + extra));
-      var sale = (isFinite(mrp) && mrp > 0 && isFinite(offPct)) ? mrp * (1 - offPct / 100) : NaN;
-      var avail = d.isAvailable === true;
-
-      var priceEl = $(".price", card), mrpEl = $(".mrp", card),
-          saveEl  = $(".save", card),  offEl = $(".badge-off", card),
-          addBtn  = $(".btn-add", card);
-
-      if (isFinite(sale) && sale > 0) {
-        priceEl.textContent = rupee(sale);
-        card.dataset.price = String(sale);
-        if (isFinite(mrp) && mrp > sale) {
-          mrpEl.textContent = rupee(mrp);
-          mrpEl.hidden = false;
-          var off = offPct;
-          card.dataset.off = String(off);
-          if (off > 0) { offEl.textContent = off + "% OFF"; offEl.classList.add("on"); }
-          saveEl.textContent = "You save " + rupee(mrp - sale);
-        } else {
-          mrpEl.hidden = true; saveEl.textContent = ""; offEl.classList.remove("on");
-          card.dataset.off = "0";
-        }
-      } else {
-        priceEl.textContent = "Price unavailable";
-        mrpEl.hidden = true; saveEl.textContent = ""; offEl.classList.remove("on");
-      }
-
-      /* productTierAttributes gives the exact reason, so the card can say
-         what is actually true rather than a catch-all "unavailable":
-           type 5 -> live      type 2 -> out of stock / discontinued
-           type 1 -> "We do not sell this product"                        */
-      var tier = d.productTierAttributes || {};
-      var text = String(tier.text || "");
-      var notSold = tier.type === 1;
-      var discontinued = /discontinu/i.test(text);
-      var notify = !!((d.productAvailabilityFlags || {}).notifyMe);
-
-      card.dataset.state = text;
-      card.dataset.avail = notSold ? "notsold"
-                         : discontinued ? "discontinued"
-                         : avail ? "in" : "out";
-
-      // a product PharmEasy does not sell should not sit in the grid at all
-      if (notSold) { card.dataset.drop = "1"; card.hidden = true; }
-
-      var sub = d.productSubstitutionAttributes;
-      if (sub && sub.count > 0) card.dataset.subst = "1";
-
-      if (addBtn) {
-        addBtn.disabled = !avail;
-        addBtn.textContent = notSold ? "Not available"
-          : discontinued ? "Discontinued"
-          : avail ? "Add"
-          : (notify ? "Notify me" : "Out of stock");
-      }
-    }
-
-    return enqueue;
   }
 
   syncFooter();

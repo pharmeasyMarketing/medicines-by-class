@@ -21,11 +21,10 @@ const CFG = {
   // {id} is substituted per card. Point this at the PHP proxy when the pages
   // are not served from a pharmeasy.in origin -- the API only sends
   // Access-Control-Allow-Origin back to pharmeasy.in hosts.
-  priceApi: process.env.PRICE_API || "https://api.pharmeasy.in/v5/product-details/{id}/dynamic",
   perPage: 24,
   minSubclassPage: 8,
   reviewer: "Reviewed by medical experts",
-  cartUrl: process.env.CART_URL || "https://pharmeasy.in/cart?src=header",
+  cartUrl: process.env.CART_URL || "https://pharmeasy.in/cart",
   // Real cart API, reverse-engineered from the PDP bundle:
   //   POST {cartApi}/cart/addToCart  {productId, productType, productName, quantity}
   //   GET  {cartApi}/cart/getCartCount
@@ -34,8 +33,6 @@ const CFG = {
   loginUrl: process.env.LOGIN_URL || "https://pharmeasy.in/login",
   // Standing extra discount folded into the displayed price. Set to 0 to turn
   // the whole thing off in one place if the offer ends.
-  extraOffPct: Number(process.env.EXTRA_OFF_PCT ?? 15),
-  tncUrl: process.env.TNC_URL || "/offers-terms",
 };
 
 /* ------------------------------------------------------------------ csv -- */
@@ -226,6 +223,8 @@ const reviewerNode = (c) => {
   return n;
 };
 
+const RX_GLYPH = `<svg class="rx-ico" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M5.10626 4.61426C6.45839 4.64721 7.81144 4.63931 9.16388 4.66309C10.3164 4.68341 11.3235 5.47983 11.4949 6.60645C11.6639 7.71781 11.4524 8.75417 10.0623 9.35547C10.0329 9.36823 10.0102 9.39819 9.9256 9.4707C10.4006 10.1066 10.8765 10.7436 11.3787 11.416C11.6974 11.0093 12.0084 10.6735 12.2459 10.2891C12.4113 10.0212 12.5922 9.9407 12.8777 9.95117C13.415 9.97106 13.9533 9.9603 14.491 9.96387C14.5231 9.96408 14.5553 9.98226 14.6678 10.0176C14.3614 10.4436 14.0738 10.8497 13.7801 11.251C13.4361 11.7206 13.1048 12.2025 12.7322 12.6465C12.5363 12.8801 12.5661 13.0178 12.7391 13.2383C13.4026 14.084 14.0474 14.9457 14.6951 15.8047C14.7551 15.8842 14.7888 15.986 14.869 16.1455C14.1443 16.1455 13.4904 16.1697 12.8406 16.1289C12.6726 16.1184 12.4841 15.9313 12.3611 15.7773C12.043 15.3789 11.7566 14.9531 11.4022 14.4619C11.0447 14.9232 10.6768 15.3381 10.3807 15.8018C10.1979 16.0879 9.99581 16.1611 9.69513 16.1523C9.10912 16.1349 8.52166 16.1465 7.82892 16.1465C8.66332 15.0349 9.44093 13.9998 10.2449 12.9287C9.60156 12.0527 8.90665 11.2122 8.33185 10.291C7.88286 9.57131 7.28772 9.78482 6.63361 9.78125V12.9834H4.61993V12.3271C4.62014 9.93204 4.62857 7.5366 4.61212 5.1416C4.60931 4.74344 4.71194 4.60464 5.10626 4.61426ZM6.64337 6.22754V8.11816C7.37066 8.11816 8.04195 8.12927 8.71271 8.11523C9.17096 8.10562 9.5719 7.70862 9.61407 7.26074C9.65726 6.80263 9.34894 6.28039 8.89532 6.24414C8.14959 6.18459 7.39609 6.22754 6.64337 6.22754Z" fill="currentColor"/></svg>`;
+
 const SEARCH_HINTS = [
   "Search for health drinks",
   "Search for medicines",
@@ -264,11 +263,10 @@ const header = () => `
         <span class="hs-ico" aria-hidden="true">${SEARCH_ICO}</span>
         <label class="vh" for="pe-search">Search for medicines and health products</label>
         <input id="pe-search" type="search" name="name" autocomplete="off" placeholder="${esc(SEARCH_HINTS[0])}" data-hints="${esc(JSON.stringify(SEARCH_HINTS))}">
-        <input type="hidden" name="src" value="header">
         <button type="submit" class="hs-btn">Search</button>
       </form>
       </div>
-      <a class="hdr-offers" href="${CFG.origin}/offers?src=header">${OFFERS_ICO}Offers</a>
+      <a class="hdr-offers" href="${CFG.origin}/offers">${OFFERS_ICO}Offers</a>
       <a class="hdr-cart" href="${CFG.cartUrl}" data-cart-link>
         <span class="cart-ico">${PE_CART}<span class="cart-count" data-cart-count>0</span></span>Cart
         <span class="sync-note" data-sync-note hidden></span>
@@ -308,7 +306,6 @@ const header = () => `
       <span class="hs-ico" aria-hidden="true">${SEARCH_ICO}</span>
       <label class="vh" for="m-search-input">Search for medicines and health products</label>
       <input id="m-search-input" type="search" name="name" autocomplete="off" placeholder="${esc(SEARCH_HINTS[0])}" data-hints="${esc(JSON.stringify(SEARCH_HINTS))}">
-      <input type="hidden" name="src" value="header">
       <button type="submit" class="hs-btn">Search</button>
     </form>
     <nav class="mhdr-menu" id="m-menu" aria-label="Primary" hidden>
@@ -453,7 +450,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
 </head>
 <body>
 ${body}
-<script>window.PE_CONFIG=${JSON.stringify({ priceApi: CFG.priceApi, extraOffPct: CFG.extraOffPct, cartUrl: CFG.cartUrl, cartApi: CFG.cartApi, loginUrl: CFG.loginUrl })};</script>
+<script>window.PE_CONFIG=${JSON.stringify({ cartUrl: CFG.cartUrl, cartApi: CFG.cartApi, loginUrl: CFG.loginUrl })};</script>
 <script src="${CFG.assets}/app.js" defer></script>
 </body>
 </html>
@@ -468,13 +465,31 @@ const faqsByClass = {};
 for (const f of faqRows) (faqsByClass[f.class_id] ??= []).push(f);
 Object.values(faqsByClass).forEach(a => a.sort((x, y) => +x.position - +y.position));
 
+/* Prices come from the nightly snapshot, which reads the numbers the PDP
+   itself renders and writes them into 02_medicines.csv. Nothing is computed
+   here: the discount PharmEasy shows has more logic behind it than we can
+   reproduce, so the only safe move is to mirror it. */
+const offer = (() => {
+  const f = path.join(ROOT, "data", "offer.json");
+  return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : {};
+})();
 let snapshot = {};
-const snapPath = path.join(ROOT, "data", "prices.json");
-if (fs.existsSync(snapPath)) {
-  snapshot = JSON.parse(fs.readFileSync(snapPath, "utf8")).items || {};
-  console.log(`price snapshot     : ${Object.keys(snapshot).length.toLocaleString()} skus`);
-} else {
-  console.log("price snapshot     : none (run src/snapshot.mjs) – cards ship without a seed price");
+{
+  const n = (v) => { const x = Number(v); return Number.isFinite(x) ? x : null; };
+  for (const m of meds) {
+    if (!m.live_sale) continue;
+    snapshot[m.sku] = {
+      mrp: n(m.live_mrp), sale: n(m.live_sale), pct: n(m.live_off_pct),
+      avail: String(m.live_available).toLowerCase() === "true",
+      tierType: m.live_tier_type === "" ? null : n(m.live_tier_type),
+      tierText: m.live_tier_text || "",
+      maxQty: n(m.live_max_qty) || 20,
+    };
+  }
+  const priced = Object.keys(snapshot).length;
+  console.log(priced
+    ? `price snapshot     : ${priced.toLocaleString()} skus (from CSV)`
+    : "price snapshot     : none – run src/snapshot.mjs, cards will ship without prices");
 }
 
 const medsByClass = {};
@@ -501,27 +516,16 @@ classes = classes.filter(c => live.has(c.class_id));
 const byId = Object.fromEntries(classes.map(c => [c.class_id, c]));
 const countOf = c => medsByClass[c.class_id]?.length || 0;
 
-/* Shared with assets/app.js -- keep the two in step or the price will jump
-   when the live call lands. */
-function priceWithExtra(mrp, apiSale, apiPct) {
-  if (!isFinite(mrp) || mrp <= 0 || !isFinite(apiSale) || apiSale <= 0) return { sale: NaN, off: 0 };
-  let pct = Number(apiPct);
-  if (!isFinite(pct)) pct = (1 - apiSale / mrp) * 100;   // derive if absent
-  const off = Math.min(95, Math.round(pct + CFG.extraOffPct));
-  return { sale: mrp * (1 - off / 100), off };
-}
 
 /* ================================================================ cards == */
 function medCard(m) {
-  // Commercial state comes from the dynamic API and nothing else. The
-  // catalogue dump's MRP is deliberately NOT a fallback -- a stale catalogue
-  // price is worse than no price, and the browser refreshes this anyway.
+  // Commercial state comes from the snapshot and nothing else. The catalogue
+  // dump's MRP is deliberately NOT a fallback -- a stale catalogue price is
+  // worse than no price at all.
   const snap = snapshot[m.sku];
-  const mrp = snap ? parseFloat(snap.mrp) : NaN;
-  const apiSale = snap ? parseFloat(snap.sale) : NaN;
-  // The extra is ADDITIVE on the API's own discount percentage, then taken off
-  // MRP -- so 10% + 15 = 25% off MRP, not 0.90 x 0.85 (which would be 23.5%).
-  const { sale, off } = priceWithExtra(mrp, apiSale, snap && snap.pct);
+  const mrp = snap ? snap.mrp : NaN;
+  const sale = snap ? snap.sale : NaN;
+  const off = snap && snap.pct != null ? Math.round(snap.pct) : 0;
   const hasPrice = isFinite(sale) && sale > 0;
   // tier 1 = "We do not sell this product" -> never merchandise it
   const tierType = snap && snap.tierType != null ? snap.tierType : null;
@@ -539,7 +543,7 @@ function medCard(m) {
   const href = `${CFG.origin}${CFG.pdpBase}/${m.slug}`;
 
   return `<article class="med" data-sku="${esc(m.sku)}" data-name="${esc(m.medicine_name)}" data-pack="${esc(m.pack_size)}" data-href="${esc(href)}" data-sub="${esc(m.sub_class)}" data-form="${esc(m.dosage_form)}" data-avail="${avail}" data-state="${esc((snap && snap.tierText) || "")}" data-subst="${subst}" data-ptype="${ptype}" data-rank="${esc(m.sort_rank)}" data-price="${hasPrice ? sale.toFixed(2) : ""}" data-off="${off}">
-      <span class="badge-rx">${bool(m.rx_required) ? "Rx" : "OTC"}</span>
+      <span class="badge-rx${bool(m.rx_required) ? " is-rx" : ""}" title="${bool(m.rx_required) ? "Prescription required" : "Over the counter"}">${bool(m.rx_required) ? RX_GLYPH : "OTC"}</span>
       <a class="med-name" href="${esc(href)}">${esc(m.medicine_name)}</a>
       ${m.manufacturer ? `<span class="med-by">By ${esc(m.manufacturer.toUpperCase())}</span>` : ""}
       <span class="med-pack">${esc(m.pack_size)}</span>
@@ -549,7 +553,7 @@ function medCard(m) {
           <span class="price">${hasPrice ? rupee(sale) : "—"}</span>
           <span class="badge-off${off ? " on" : ""}">${off ? off + "% OFF" : ""}</span>
         </div>
-        ${CFG.extraOffPct > 0 ? `<span class="med-coupon">with Coupon Discount <a class="tnc" href="${esc(CFG.tncUrl)}" rel="nofollow">T&amp;C</a></span>` : ""}
+        ${offer.couponMrpThreshold ? `<span class="med-coupon">Offer applicable on order above \u20b9${offer.couponMrpThreshold}.</span>` : ""}
         <button type="button" class="btn-add"${avail === "in" ? "" : " disabled"}>${stateLabel === "Add" ? "Add to cart" : stateLabel}</button>
       </div>
     </article>`;
@@ -839,7 +843,7 @@ ${header()}
           ${slice.map(medCard).join("\n          ")}
         </div>
 
-        ${CFG.extraOffPct > 0 ? `<p class="grid-note">% OFF is calculated on the printed MRP. Discounts, delivery promise and PLUS savings are subject to <a href="${esc(CFG.tncUrl)}" rel="nofollow">T&amp;C</a>.</p>` : ""}
+        <p class="grid-note">% OFF is calculated on the printed MRP. Prices are refreshed daily; the price charged at checkout is the one shown on the product page.</p>
 
         ${total > CFG.perPage ? `<div class="pager">
           <button type="button" class="btn-ghost" data-show-more>Show next ${CFG.perPage} medicines</button>
