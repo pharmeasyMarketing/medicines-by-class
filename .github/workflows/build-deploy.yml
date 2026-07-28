@@ -100,9 +100,18 @@ jobs:
             exit 0
           fi
           mkdir -p ~/.ssh
-          printf '%s' "$SSH_KEY" > ~/.ssh/id_ed25519
+          # The trailing newline is required — OpenSSH rejects a key file
+          # without one, and reports it only as "error in libcrypto".
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           printf '%s\n' "$KNOWN" > ~/.ssh/known_hosts
+
+          # Fail with a readable message rather than three rounds of
+          # "Permission denied" if the secret is malformed.
+          if ! ssh-keygen -y -f ~/.ssh/id_ed25519 >/dev/null 2>&1; then
+            echo "::error::DEPLOY_SSH_KEY is not a valid private key — re-set it with: gh secret set DEPLOY_SSH_KEY < deploy/keys/mbc_deploy"
+            exit 1
+          fi
 
           # This VPS intermittently drops runner connections — the fever-watch
           # deploy on the same host carries the identical workaround. Without
