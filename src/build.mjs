@@ -226,6 +226,10 @@ const reviewerNode = (c) => {
   return n;
 };
 
+const SEARCH_ICO = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.4" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+
+const OFFERS_ICO = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2.6l2 1.5 2.4-.5.9 2.3 2.3.9-.5 2.4 1.5 2-1.5 2 .5 2.4-2.3.9-.9 2.3-2.4-.5-2 1.5-2-1.5-2.4.5-.9-2.3-2.3-.9.5-2.4-1.5-2 1.5-2-.5-2.4 2.3-.9.9-2.3 2.4.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9.6 14.4l4.8-4.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9.9" cy="10.1" r="1.05" fill="currentColor"/><circle cx="14.1" cy="13.9" r="1.05" fill="currentColor"/></svg>`;
+
 const SHIELD = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.6l7 2.8v5c0 4.2-2.9 7.4-7 8.8-4.1-1.4-7-4.6-7-8.8v-5z"/><polyline points="8.8 12.2 11.2 14.6 15.4 10.2"/></svg>`;
 
 /* "Reviewed by" stays the emphasised bit; the reviewer's own name is set light,
@@ -247,7 +251,22 @@ const header = () => `
       <a class="hdr-logo" href="${CFG.origin}/" aria-label="PharmEasy home">
         <img src="${LOGO}" alt="PharmEasy" width="164" height="30">
       </a>
-      <nav class="hdr-nav pe-scroll" aria-label="Primary">
+      <span class="hdr-div" aria-hidden="true"></span>
+      <form class="hdr-search" role="search" method="get" action="${CFG.origin}/search/all">
+        <span class="hs-ico" aria-hidden="true">${SEARCH_ICO}</span>
+        <label class="vh" for="pe-search">Search for medicines and health products</label>
+        <input id="pe-search" type="search" name="name" autocomplete="off" placeholder="Search for Health Drinks">
+        <input type="hidden" name="src" value="header">
+        <button type="submit" class="hs-btn">Search</button>
+      </form>
+      <a class="hdr-offers" href="${CFG.origin}/offers">${OFFERS_ICO}Offers</a>
+      <a class="hdr-cart" href="${CFG.cartUrl}" data-cart-link>
+        <span class="cart-ico">${PE_CART}<span class="cart-count" data-cart-count>0</span></span>Cart
+        <span class="sync-note" data-sync-note hidden></span>
+      </a>
+    </div>
+    <div class="hdr-bar">
+      <nav class="hdr-nav" aria-label="Primary">
         ${NAV.map(([n, href, kids]) => {
           const label = esc(n) + (kids ? chevDown(13, 2.4) : "");
           const top = href
@@ -259,11 +278,6 @@ const header = () => `
           }</ul></div></div>`;
         }).join("\n        ")}
       </nav>
-      <div class="hdr-spacer"></div>
-      <a class="hdr-cart" href="${CFG.cartUrl}" data-cart-link>
-        <span class="cart-ico">${PE_CART}<span class="cart-count" data-cart-count>0</span></span>Cart
-        <span class="sync-note" data-sync-note hidden></span>
-      </a>
     </div>
   </div>
 
@@ -369,7 +383,7 @@ const siteNode = () => ({
   publisher: { "@id": ORG_ID },
   potentialAction: {
     "@type": "SearchAction",
-    target: { "@type": "EntryPoint", urlTemplate: `${CFG.origin}/search?q={search_term_string}` },
+    target: { "@type": "EntryPoint", urlTemplate: `${CFG.origin}/search/all?name={search_term_string}` },
     "query-input": "required name=search_term_string",
   },
 });
