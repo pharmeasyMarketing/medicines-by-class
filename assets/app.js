@@ -384,6 +384,20 @@
   cartPaintCount();
   wireCartLinks();
   wireDrawer();
+
+  /* The sticky Sort|Filter bar only earns its space once the user is actually
+     among the products — reveal it when the first card's Add button scrolls
+     into view, and hide it again above that. */
+  (function () {
+    var bar = $(".mtools"), firstCta = $(".med .btn-add") || $(".med");
+    if (!bar || !firstCta || !("IntersectionObserver" in window)) return;
+    bar.classList.add("is-armed");
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        bar.classList.toggle("on", e.isIntersecting || e.boundingClientRect.top < 0);
+      });
+    }, { rootMargin: "0px 0px -40% 0px" }).observe(firstCta);
+  })();
   paintSyncNote();
   // arriving back with a session (e.g. straight after login) drains the queue
   if (pending().length) flushPending();

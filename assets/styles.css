@@ -1179,3 +1179,34 @@ header { box-shadow: var(--sh-sm); }
   .page { padding-bottom: 66px; }         /* clear the fixed bar */
   .totop { bottom: 66px; }
 }
+
+/* ==========================================================================
+   CART MARK · HEADER BORDER · BREADCRUMB PADDING · STICKY BAR REVEAL
+   ========================================================================== */
+/* one cart mark for both breakpoints, red count bubble like the live header */
+.hdr-cart .cart-ico { position: relative; display: inline-flex; }
+.hdr-cart svg { display: block; }
+.cart-count {
+  background: var(--coral-600); color: #fff;
+  min-width: 20px; height: 20px; padding: 0 6px;
+  font-size: 11px; font-weight: var(--fw-bold);
+  border-radius: var(--r-pill); border: 0;
+  align-items: center; justify-content: center;
+}
+.hdr-cart .cart-count { position: absolute; top: -7px; left: 9px; }
+.mhdr-cart .cart-count { background: var(--coral-600); border: 2px solid #fff; }
+
+/* no rule above the desktop nav */
+.hdr, .hdr-nav { border-top: 0; }
+.hdr-nav { border-top: 0 !important; }
+
+/* desktop breadcrumb breathing room */
+.crumbs { padding: 24px 0 16px; }
+
+@media (max-width: 767px) {
+  .crumbs { margin: 8px 16px 0; padding: 0 0 4px; }
+
+  /* hidden until the first product CTA comes into view */
+  .mtools.is-armed { transform: translateY(110%); transition: transform .22s ease-out; }
+  .mtools.is-armed.on { transform: translateY(0); }
+}
