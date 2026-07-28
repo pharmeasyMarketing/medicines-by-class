@@ -226,6 +226,13 @@ const reviewerNode = (c) => {
   return n;
 };
 
+const SEARCH_HINTS = [
+  "Search for health drinks",
+  "Search for medicines",
+  "Search for Shampoo",
+  "Search for Lab tests",
+];
+
 const SEARCH_ICO = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.4" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
 
 const OFFERS_ICO = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2.6l2 1.5 2.4-.5.9 2.3 2.3.9-.5 2.4 1.5 2-1.5 2 .5 2.4-2.3.9-.9 2.3-2.4-.5-2 1.5-2-1.5-2.4.5-.9-2.3-2.3-.9.5-2.4-1.5-2 1.5-2-.5-2.4 2.3-.9.9-2.3 2.4.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9.6 14.4l4.8-4.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9.9" cy="10.1" r="1.05" fill="currentColor"/><circle cx="14.1" cy="13.9" r="1.05" fill="currentColor"/></svg>`;
@@ -255,7 +262,7 @@ const header = () => `
       <form class="hdr-search" role="search" method="get" action="${CFG.origin}/search/all">
         <span class="hs-ico" aria-hidden="true">${SEARCH_ICO}</span>
         <label class="vh" for="pe-search">Search for medicines and health products</label>
-        <input id="pe-search" type="search" name="name" autocomplete="off" placeholder="Search for Health Drinks">
+        <input id="pe-search" type="search" name="name" autocomplete="off" placeholder="${esc(SEARCH_HINTS[0])}" data-hints="${esc(JSON.stringify(SEARCH_HINTS))}">
         <input type="hidden" name="src" value="header">
         <button type="submit" class="hs-btn">Search</button>
       </form>
@@ -287,11 +294,21 @@ const header = () => `
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.1 5.99999H20M14.1 12H20M4 18H20M5.15 5.99999H8.73C9.36513 5.99999 9.88 6.51486 9.88 7.14999V10.79C9.88 11.4251 9.36513 11.94 8.73 11.94H5.15C4.51487 11.94 4 11.4251 4 10.79V7.14999C4 6.51486 4.51487 5.99999 5.15 5.99999Z" stroke="#30363C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <a class="mhdr-logo" href="${CFG.origin}/" aria-label="PharmEasy home">${PE_WORDMARK}</a>
+      <button type="button" class="mhdr-btn mhdr-search-btn" aria-label="Search" aria-expanded="false" aria-controls="m-search" data-search-btn>
+        ${SEARCH_ICO}
+      </button>
       <a class="mhdr-btn mhdr-cart" href="${CFG.cartUrl}" aria-label="Cart" data-cart-link>
         ${PE_CART}
         <span class="cart-count" data-cart-count>0</span>
       </a>
     </div>
+    <form class="msearch" id="m-search" role="search" method="get" action="${CFG.origin}/search/all" hidden>
+      <span class="hs-ico" aria-hidden="true">${SEARCH_ICO}</span>
+      <label class="vh" for="m-search-input">Search for medicines and health products</label>
+      <input id="m-search-input" type="search" name="name" autocomplete="off" placeholder="${esc(SEARCH_HINTS[0])}" data-hints="${esc(JSON.stringify(SEARCH_HINTS))}">
+      <input type="hidden" name="src" value="header">
+      <button type="submit" class="hs-btn">Search</button>
+    </form>
     <nav class="mhdr-menu" id="m-menu" aria-label="Primary" hidden>
       ${NAV.map(([n, href, kids]) => {
         const parent = href
