@@ -1469,3 +1469,23 @@ a.cred-name:hover { color: var(--teal-700); }
    two and left a gap; the search takes it now and the cart sits flush. */
 .mhdr-search-btn { margin-left: auto; }
 .mhdr-cart { margin-left: 0; }
+
+/* ============================================================
+   Rx glyph, coupon line, tighter nav row       (round 17)
+   ============================================================ */
+
+/* the ℞ mark replaces the "Rx" text badge; white on the teal chip */
+.badge-rx.is-rx {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; padding: 0;
+  background: var(--teal-600); color: #fff; border-radius: 6px;
+}
+.badge-rx .rx-ico { display: block; width: 18px; height: 18px; }
+
+/* Coupon threshold line. Deliberately the smallest thing on the card, but
+   10px is about the floor for legible text on a phone — 5px renders at a
+   third the height of body copy and is effectively unreadable. */
+.med-coupon { font-size: 10px; line-height: 14px; color: var(--fg-3); }
+
+/* nav row height, matching the live header's nav band */
+.hdr-nav { height: 40px; }
