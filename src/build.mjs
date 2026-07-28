@@ -207,12 +207,16 @@ const header = () => `
 
   <div class="mhdr">
     <div class="mhdr-row">
-      <button type="button" class="mhdr-btn" aria-label="Open menu" aria-expanded="false" aria-controls="m-menu" data-menu-btn>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="14" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/><circle cx="18" cy="12" r="2.2"/></svg>
+      <button type="button" class="mhdr-btn mhdr-burger" aria-label="Open menu" aria-expanded="false" aria-controls="m-menu" data-menu-btn>
+        <svg width="22" height="16" viewBox="0 0 22 16" fill="none" aria-hidden="true">
+          <rect x="0" y="1"  width="9"  height="3" rx="1.5" fill="#F47779"/>
+          <rect x="0" y="8"  width="22" height="3" rx="1.5" fill="#30363C"/>
+        </svg>
       </button>
       <a class="mhdr-logo" href="${CFG.origin}/" aria-label="PharmEasy home"><img src="${LOGO}" alt="PharmEasy" width="180" height="40"></a>
-      <a class="mhdr-btn" href="${CFG.cartUrl}" aria-label="Cart" data-cart-link style="position:relative">
-        ${CART_ICON(22)}<span class="cart-count" data-cart-count style="position:absolute;top:5px;right:3px">0</span>
+      <a class="mhdr-btn mhdr-cart" href="${CFG.cartUrl}" aria-label="Cart" data-cart-link>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h2.1l2.5 11h11.1"/><path d="M6 6.5h15l-1.7 6.2H7.4"/><circle cx="9" cy="19.5" r="1.6"/><circle cx="17.5" cy="19.5" r="1.6"/></svg>
+        <span class="cart-count" data-cart-count>0</span>
       </a>
     </div>
     <nav class="mhdr-menu" id="m-menu" aria-label="Primary" hidden>
