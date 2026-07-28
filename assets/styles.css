@@ -1210,3 +1210,8 @@ header { box-shadow: var(--sh-sm); }
   .mtools.is-armed { transform: translateY(110%); transition: transform .22s ease-out; }
   .mtools.is-armed.on { transform: translateY(0); }
 }
+
+@media (max-width: 767px) {
+  .crumbs ol { font-size: 10px; line-height: 18px; }
+  .crumbs .crumb-sep svg { width: 10px; height: 10px; }
+}
