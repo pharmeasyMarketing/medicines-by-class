@@ -432,6 +432,10 @@ const page = ({ title, desc, canonical, jsonld, body, extraHead = "", ogSlug = "
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${esc(canonical)}">
+<!-- SVG first so modern browsers get a crisp mark at any size; the .ico is
+     PharmEasy's own, but it only ships a 16x16 frame, hence the fallback order -->
+<link rel="icon" type="image/svg+xml" href="${CFG.assets}/favicon.svg">
+<link rel="icon" type="image/x-icon" href="${CFG.assets}/favicon.ico" sizes="16x16">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${esc(canonical)}">
