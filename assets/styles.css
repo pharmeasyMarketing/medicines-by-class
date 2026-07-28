@@ -9,8 +9,8 @@
 body {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 21px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
   color: var(--fg-1);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
@@ -622,7 +622,7 @@ button { font-family: inherit; }
   padding: 40px 44px 34px; margin-top: 12px; }
 .hero-in { position: relative; max-width: 720px; }
 .hero .eyebrow-sm { font-size: 13px; letter-spacing: .08em; color: var(--teal-700); margin: 0; }
-.hero h1 { font-size: 38px; line-height: 46px; font-weight: 800; letter-spacing: -0.02em;
+.hero h1 { font-size: 38px; line-height: 46px; font-weight: 700; letter-spacing: -0.02em;
   color: var(--fg-1); margin: 10px 0 0; }
 .hero-sub { font-size: 16px; line-height: 26px; color: var(--fg-2); margin: 10px 0 0; max-width: 540px; }
 .hero .field { height: 56px; padding: 0 18px; background: #fff; border: 1px solid var(--line);
@@ -650,7 +650,7 @@ button { font-family: inherit; }
 .ha-card i:nth-child(3) { width: 56%; background: rgba(255,255,255,0.58); }
 .ha-rx { right: 58px; top: 22px; width: 64px; height: 64px; border-radius: 999px; background: #fff;
   box-shadow: var(--sh-sm); display: flex; align-items: center; justify-content: center;
-  font-size: 17px; font-weight: 800; color: var(--teal-700); }
+  font-size: 17px; font-weight: 700; color: var(--teal-700); }
 .ha-plus { right: 300px; bottom: 30px; width: 54px; height: 54px; border-radius: 999px; background: #fff;
   box-shadow: var(--sh-sm); display: flex; align-items: center; justify-content: center; }
 .ha-cap { right: 52px; bottom: 24px; width: 118px; height: 50px; border-radius: 999px; overflow: hidden;
@@ -660,7 +660,7 @@ button { font-family: inherit; }
 .ha-cap i:last-child { background: #F2695C; }
 
 /* --- section heads + A-Z --- */
-.sec > h2 { font-size: 20px; line-height: 28px; font-weight: 800; margin: 6px 0 0; }
+.sec > h2 { font-size: 20px; line-height: 28px; font-weight: 700; margin: 6px 0 0; }
 .sec .eyebrow-sm { font-size: 12px; letter-spacing: .08em; margin: 0; }
 .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
 .sec-head p { font-size: 13px; color: var(--fg-2); margin: 6px 0 0; }
@@ -719,7 +719,7 @@ html, body { background: var(--bg); }
   display: flex; align-items: center; justify-content: center; color: var(--teal-600); }
 .chero-main { flex: 1; min-width: 0; }
 .chero .eyebrow-sm { font-size: 13px; letter-spacing: .08em; margin: 0; }
-.chero h1 { font-size: 34px; line-height: 42px; font-weight: 800; letter-spacing: -0.02em;
+.chero h1 { font-size: 34px; line-height: 42px; font-weight: 700; letter-spacing: -0.02em;
   color: var(--fg-1); margin: 8px 0 0; }
 .chero-sub { font-size: 15px; line-height: 25px; color: var(--fg-2); margin: 8px 0 0; max-width: 660px; }
 .chero-meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px;
@@ -767,7 +767,7 @@ html, body { background: var(--bg); }
   .mhdr-loc { width: 100%; height: 40px; padding: 0 16px; gap: 6px; background: var(--bg);
     border: 0; border-top: 1px solid var(--line-2); }
   .mhdr-loc span:first-child { font-size: 13px; font-weight: 400; color: var(--fg-2); }
-  .mhdr-loc span:nth-child(2) { font-size: 13px; font-weight: 800; color: var(--fg-1); }
+  .mhdr-loc span:nth-child(2) { font-size: 13px; font-weight: 700; color: var(--fg-1); }
   .mhdr-chips { display: none; }
 
   .crumbs { padding: 12px 16px 0; }
@@ -879,7 +879,7 @@ html, body { background: var(--bg); }
   display: flex; flex-direction: column; }
 .cd-hd { display: flex; align-items: center; justify-content: space-between;
   padding: 16px 18px; border-bottom: 1px solid var(--line-2); }
-.cd-hd b { font-size: 16px; font-weight: 800; color: var(--fg-1); }
+.cd-hd b { font-size: 16px; font-weight: 700; color: var(--fg-1); }
 .cd-hd span { color: var(--fg-3); font-weight: 700; }
 .cd-body { flex: 1; overflow-y: auto; padding: 8px 18px; }
 .cd-empty { font-size: 14px; color: var(--fg-3); padding: 32px 0; text-align: center; }
@@ -889,21 +889,21 @@ html, body { background: var(--bg); }
 .cd-info a { font-size: 13px; font-weight: 700; line-height: 18px; color: var(--fg-1); }
 .cd-info a:hover { color: var(--teal-700); }
 .cd-info span { font-size: 11px; color: var(--fg-3); }
-.cd-info b { font-size: 14px; font-weight: 800; color: var(--fg-1); margin-top: 2px; }
+.cd-info b { font-size: 14px; font-weight: 700; color: var(--fg-1); margin-top: 2px; }
 .cd-qty { flex: none; display: flex; align-items: center; gap: 2px; border: 1px solid var(--teal-600);
   border-radius: var(--r-sm); overflow: hidden; height: 32px; }
 .cd-qty button { width: 30px; height: 100%; border: 0; background: none; color: var(--teal-600);
   font-size: 16px; font-weight: 700; cursor: pointer; line-height: 1; }
 .cd-qty button:hover:not(:disabled) { background: var(--teal-50); }
 .cd-qty button:disabled { opacity: .35; cursor: default; }
-.cd-qty span { min-width: 20px; text-align: center; font-size: 13px; font-weight: 800; color: var(--teal-700); }
+.cd-qty span { min-width: 20px; text-align: center; font-size: 13px; font-weight: 700; color: var(--teal-700); }
 .cd-del { flex: none; background: none; border: 0; cursor: pointer; color: var(--fg-3); padding: 4px; }
 .cd-del:hover { color: var(--error); }
 .cd-foot { border-top: 1px solid var(--line-2); padding: 16px 18px;
   padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
 .cd-total { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .cd-total span { font-size: 14px; color: var(--fg-2); }
-.cd-total b { font-size: 18px; font-weight: 800; color: var(--fg-1); }
+.cd-total b { font-size: 18px; font-weight: 700; color: var(--fg-1); }
 .cd-foot .btn-primary { width: 100%; }
 .cd-note { font-size: 11px; line-height: 16px; color: var(--fg-3); margin: 10px 0 0; text-align: center; }
 
@@ -937,3 +937,61 @@ header { box-shadow: var(--sh-sm); }
   .mhdr-row { height: 64px; }
   .cart-banner { top: 64px; }
 }
+
+/* ==========================================================================
+   LIVE PHARMEASY.IN COMPONENTS — values taken from production CSS
+   ========================================================================== */
+
+/* buttons: 40px, 8px radius, white fill + 1px teal border, label 14/500 #134e48
+   (.styles_submitButton / .styles_submitButtonText on the live PDP) */
+.btn-add {
+  height: 40px; border-radius: var(--r-md); padding: 4px 0;
+  background: #fff; border: 1px solid var(--teal-600);
+  font-size: 14px; line-height: 24px; font-weight: var(--fw-medium);
+  color: var(--teal-800);
+}
+.btn-add:hover:not(:disabled) { background: var(--teal-600); color: #fff; }
+.btn-primary {
+  height: 40px; border-radius: var(--r-md);
+  font-size: 14px; line-height: 24px; font-weight: var(--fw-semi);
+}
+.btn-ghost {
+  height: 40px; border-radius: var(--r-md);
+  font-size: 14px; line-height: 24px; font-weight: var(--fw-semi);
+  color: var(--teal-800); border: 1px solid var(--teal-600);
+}
+
+/* breadcrumb: #4f585e, capitalised, single line with ellipsis
+   (.BreadCrumbLink_breadCrumb) */
+.crumbs ol { font-size: var(--fs-sm); line-height: 1.5; gap: 8px; }
+.crumbs a, .crumbs [aria-current] {
+  text-transform: capitalize; color: var(--fg-2); line-height: 1.5;
+  max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.crumbs [aria-current] { color: var(--fg-1); font-weight: var(--fw-semi); }
+
+/* headings follow the live scale — 26 / 22 / 18, never 800 */
+.hero h1  { font-size: 26px; line-height: 34px; font-weight: var(--fw-bold); }
+.chero h1 { font-size: 26px; line-height: 34px; font-weight: var(--fw-bold); }
+.sec > h2 { font-size: 18px; line-height: 28px; font-weight: var(--fw-bold); }
+.card h2  { font-size: 18px; line-height: 28px; font-weight: var(--fw-bold); }
+.card h3  { font-size: 16px; line-height: 24px; font-weight: var(--fw-semi); }
+.toolbar h2 { font-size: 16px; line-height: 24px; font-weight: var(--fw-semi); }
+
+/* cards + chips take the live 8px radius */
+.med, .cls-card, .pop-row, .card, .faq-card, .dir-card, .side, .toolbar,
+.hero, .chero, .trust { border-radius: var(--r-md); }
+.med-name { font-size: 14px; line-height: 20px; font-weight: var(--fw-semi); }
+.price    { font-size: 16px; line-height: 24px; font-weight: var(--fw-bold); }
+.mrp      { font-size: 12px; font-weight: var(--fw-regular); }
+.save     { font-size: 12px; font-weight: var(--fw-medium); }
+.badge-rx, .badge-off { font-size: 10px; font-weight: var(--fw-semi); border-radius: var(--r-sm); }
+.hdr-nav a { font-size: 14px; line-height: 24px; font-weight: var(--fw-semi); }
+.cls-name  { font-size: 14px; line-height: 24px; font-weight: var(--fw-semi); }
+.cls-desc  { font-size: 12px; line-height: 18px; }
+.cls-cat, .eyebrow-sm { font-size: 11px; font-weight: var(--fw-semi); }
+.az button { border-radius: var(--r-md); font-size: 13px; font-weight: var(--fw-semi); }
+.form-pill, .result-pill, .pill-muted, .chero-chips span { border-radius: var(--r-pill); font-weight: var(--fw-semi); }
+
+/* hamburger rows match the live nav sizing */
+.mhdr-menu a { font-size: 14px; line-height: 24px; font-weight: var(--fw-semi); }

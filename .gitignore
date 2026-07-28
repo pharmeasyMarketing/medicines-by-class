@@ -12,3 +12,6 @@ Medicines-by-class.xlsx
 .deploy-manifest.json
 
 # built site is committed by CI, not locally
+
+# deploy keys — never commit
+deploy/keys/
