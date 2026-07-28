@@ -1081,3 +1081,55 @@ header { box-shadow: var(--sh-sm); }
   border-right: 2px solid var(--fg-3); border-bottom: 2px solid var(--fg-3);
   transform: rotate(45deg); margin-top: -4px; }
 .side-top b { font-size: 16px; font-weight: var(--fw-bold); }
+
+/* ==========================================================================
+   REAL STATUS · LIST HEADING · HERO ICON · HEADER MARKS
+   ========================================================================== */
+/* an unavailable product states the reason plainly instead of a greyed CTA */
+.med .btn-add:disabled {
+  background: none; border: 0; color: var(--coral-700);
+  font-size: 13px; font-weight: var(--fw-semi); text-align: left;
+  height: auto; padding: 8px 0 0; cursor: default; opacity: 1;
+}
+.med .btn-add:disabled:hover { background: none; }
+
+/* list heading on its own line; sort + filter left-aligned, no box */
+.list-title { font-size: 18px; line-height: 28px; font-weight: var(--fw-bold);
+  color: var(--fg-1); margin: 20px 0 8px; }
+.toolbar { background: none; border: 0; border-radius: 0; padding: 0 0 8px;
+  display: flex; align-items: center; justify-content: flex-start; gap: 12px; flex-wrap: wrap; }
+.toolbar .sub { font-size: 13px; color: var(--fg-2); }
+.sortwrap { margin-left: auto; }
+.mtools { order: -1; }
+
+.mhdr-logo svg { display: block; height: 29px; width: auto; }
+
+@media (max-width: 767px) {
+  /* the hero tile ate ~74px of a 375px screen and squeezed the H1 */
+  .chero-ico { display: none; }
+  .chero-in { display: block; }
+  .list-title { margin: 16px 12px 6px; font-size: 16px; line-height: 24px; }
+  .toolbar { padding: 0 12px 8px; gap: 8px; }
+  .toolbar .sub { width: 100%; order: 2; }
+  .sortwrap { display: none; }
+  .mtools { order: 1; margin: 0; }
+  .mhdr-logo svg { height: 26px; }
+}
+
+/* ==========================================================================
+   OVERRIDES — these must sit last; earlier mobile blocks re-declare them
+   ========================================================================== */
+@media (max-width: 767px) {
+  .chero-ico { display: none; }
+  .chero-in  { display: block; }
+  /* the sort/filter row is not a card: no fill, no border, left aligned */
+  .toolbar {
+    background: none; border: 0; border-radius: 0;
+    margin: 0; padding: 0 12px 10px;
+    justify-content: flex-start; gap: 8px; flex-wrap: wrap;
+  }
+  .toolbar .mtools { order: 1; margin-left: 0; }
+  .toolbar .sub    { order: 2; width: 100%; margin-top: 6px; }
+  .sortwrap { display: none; }
+}
+.toolbar { background: none; border: 0; border-radius: 0; justify-content: flex-start; }
