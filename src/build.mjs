@@ -903,7 +903,9 @@ ${header()}
   </div>
 </div>
 <div class="sheet" id="sheet-filter" role="dialog" aria-modal="true" aria-label="Filter medicines">
-  <div class="sheet-hd"><b>Filters</b><button type="button" class="sheet-x" data-sheet-close aria-label="Close">✕</button></div>
+  <div class="sheet-hd"><b>Filters</b>
+    <button type="button" class="sheet-clear" data-clear-filters>Clear all</button>
+    <button type="button" class="sheet-x" data-sheet-close aria-label="Close">✕</button></div>
   <div class="sheet-body">
     <div class="side">
       ${subs.length ? `<div class="side-h">Sub-class</div>
@@ -916,7 +918,7 @@ ${header()}
         <label><input type="checkbox" data-avail-filter="subst">Substitute available</label>
       </div>
     </div>
-    <button type="button" class="btn-primary" data-sheet-close style="width:100%;margin-top:20px">Show ${total} medicines</button>
+    <button type="button" class="btn-primary sheet-apply" data-sheet-close>Apply filter</button>
   </div>
 </div>
 ${footer()}`;
