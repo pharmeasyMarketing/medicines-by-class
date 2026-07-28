@@ -259,6 +259,7 @@ const header = () => `
         <img src="${LOGO}" alt="PharmEasy" width="164" height="30">
       </a>
       <span class="hdr-div" aria-hidden="true"></span>
+      <div class="hdr-centre">
       <form class="hdr-search" role="search" method="get" action="${CFG.origin}/search/all">
         <span class="hs-ico" aria-hidden="true">${SEARCH_ICO}</span>
         <label class="vh" for="pe-search">Search for medicines and health products</label>
@@ -266,7 +267,8 @@ const header = () => `
         <input type="hidden" name="src" value="header">
         <button type="submit" class="hs-btn">Search</button>
       </form>
-      <a class="hdr-offers" href="${CFG.origin}/offers">${OFFERS_ICO}Offers</a>
+      </div>
+      <a class="hdr-offers" href="${CFG.origin}/offers?src=header">${OFFERS_ICO}Offers</a>
       <a class="hdr-cart" href="${CFG.cartUrl}" data-cart-link>
         <span class="cart-ico">${PE_CART}<span class="cart-count" data-cart-count>0</span></span>Cart
         <span class="sync-note" data-sync-note hidden></span>
