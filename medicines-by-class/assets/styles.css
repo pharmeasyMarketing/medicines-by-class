@@ -1432,3 +1432,40 @@ a.cred-name:hover { color: var(--teal-700); }
 
 .mhdr-search-btn { color: var(--fg-1); }
 .mhdr-search-btn svg { width: 22px; height: 22px; }
+
+/* ============================================================
+   Header sizing from the live header's box model  (round 16)
+   top row 1440x64 · inner container 1360 wide, 40px side padding
+   search 531x48, padding 4px 4px 4px 24px, radius 100px,
+   border 1px solid rgb(215,223,229)
+   ============================================================ */
+/* full width with 40px gutters, matching the live 1440 row / 1360 content —
+   an earlier round had capped this at 1200px */
+.hdr-top { height: 64px; max-width: none; margin: 0; padding: 0 40px; gap: 16px; }
+.hdr-bar > .hdr-nav { padding: 0 40px; }
+.hdr-div { height: 32px; }
+
+/* the search is centred in the leftover space rather than stretched across it */
+.hdr-centre { flex: 1 1 auto; min-width: 0; display: flex; justify-content: center; }
+.hdr-search {
+  flex: 0 1 531px; width: 531px; max-width: 100%;
+  height: 48px; padding: 0 4px 0 24px; gap: 10px;
+  border: 1px solid rgb(215,223,229); border-radius: 100px;
+}
+.hs-btn { height: 38px; line-height: 38px; padding: 0 24px; font-size: 14px; }
+.hdr-search input { font-size: 14px; }
+
+/* nav row: the 40px list plus a little breathing room, not 54px */
+.hdr-nav { height: 44px; gap: 30px; }
+.hdr-nav .nav-item > a, .hdr-nav .nav-top { font-size: 14px; padding: 4px 2px; }
+
+@media (max-width: 1180px) {
+  .hdr-top { padding: 0 24px; gap: 12px; }
+  .hdr-search { flex: 1 1 auto; width: auto; }
+}
+
+/* mobile: magnifier pushed right so it sits just before the cart. The cart
+   already carried margin-left:auto, which split the free space between the
+   two and left a gap; the search takes it now and the cart sits flush. */
+.mhdr-search-btn { margin-left: auto; }
+.mhdr-cart { margin-left: 0; }
