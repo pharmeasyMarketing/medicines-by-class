@@ -1391,3 +1391,44 @@ a.cred-name:hover { color: var(--teal-700); }
   .hdr-nav { gap: 22px; }
   .hdr-nav .nav-item > a, .hdr-nav .nav-top { font-size: 14px; }
 }
+
+/* ============================================================
+   Rotating placeholder + mobile search           (round 15)
+   ============================================================ */
+
+/* the hint cross-fades rather than snapping between categories */
+.hdr-search input::placeholder,
+.msearch input::placeholder { transition: opacity .18s; opacity: 1; }
+.hdr-search input.hint-out::placeholder,
+.msearch input.hint-out::placeholder { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hdr-search input::placeholder,
+  .msearch input::placeholder { transition: none; }
+}
+
+/* mobile search bar, revealed under the header row */
+.msearch {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 12px 10px; padding: 0 5px 0 14px;
+  height: 42px; background: #fff;
+  border: 1px solid var(--line); border-radius: 999px;
+}
+.msearch[hidden] { display: none; }
+.msearch:focus-within {
+  border-color: var(--teal-600);
+  box-shadow: 0 0 0 3px rgba(16,132,126,.12);
+}
+.msearch input {
+  flex: 1 1 auto; min-width: 0;
+  border: 0; outline: 0; background: transparent;
+  font: 400 14px/22px var(--font); color: var(--fg-1);
+}
+.msearch input::placeholder { color: var(--fg-3); }
+.msearch input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.msearch .hs-btn { height: 32px; padding: 0 16px; font-size: 14px; line-height: 32px; }
+.msearch .hs-ico { color: var(--fg-3); }
+.msearch .hs-ico svg { width: 18px; height: 18px; }
+
+.mhdr-search-btn { color: var(--fg-1); }
+.mhdr-search-btn svg { width: 22px; height: 22px; }
