@@ -1328,8 +1328,10 @@ header { box-shadow: var(--sh-sm); }
 .cred-by { font-weight: 400; }
 .cred-by b { font-weight: 700; }
 .cred-name { font-weight: 400; color: inherit; }
-a.cred-name { text-decoration: underline; text-underline-offset: 2px; }
-a.cred-name:hover { color: var(--teal-700); }
+/* still a link, but underlining it made the line look busy next to the
+   separator and the policy link; the teal on hover carries the affordance */
+a.cred-name { text-decoration: none; }
+a.cred-name:hover { color: var(--teal-700); text-decoration: underline; text-underline-offset: 2px; }
 
 /* ============================================================
    Desktop header, two rows                      (round 14)
