@@ -600,11 +600,23 @@
     var btn = $("[data-menu-btn]");
     var menu = $("#m-menu");
     if (!btn || !menu) return;
-    btn.addEventListener("click", function () {
+    function close() {
+      menu.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+    }
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
       var open = btn.getAttribute("aria-expanded") === "true";
       btn.setAttribute("aria-expanded", String(!open));
       menu.hidden = open;
     });
+    // tapping the page behind an open menu should dismiss it
+    document.addEventListener("click", function (e) {
+      if (menu.hidden) return;
+      if (e.target.closest && (e.target.closest("#m-menu") || e.target.closest("[data-menu-btn]"))) return;
+      close();
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
   })();
 
   cartPaintCount();
