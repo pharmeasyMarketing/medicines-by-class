@@ -480,8 +480,13 @@
     function start() {
       if (timer) return;
       timer = setInterval(function () {
-        // never swap the hint out from under someone mid-search
-        if (document.activeElement === input || input.value) return;
+        // Pause only once there is text to protect — pausing on focus alone
+        // meant the mobile field, which is focused the moment the bar opens,
+        // never rotated at all.
+        if (input.value) return;
+        // a hidden field (the mobile bar before it is opened) must not burn
+        // through the list unseen — it would then open mid-rotation
+        if (input.offsetParent === null) { i = 0; input.placeholder = hints[0]; return; }
         i = (i + 1) % hints.length;
         input.classList.add("hint-out");
         setTimeout(function () {
@@ -490,8 +495,18 @@
         }, 180);
       }, 2600);
     }
-    input.addEventListener("focus", stop);
-    input.addEventListener("blur", start);
+
+    /* Called when the mobile bar is revealed, so the sequence always leads
+       with the first hint and the user gets a full interval on it. */
+    input.restartHints = function () {
+      stop();
+      i = 0;
+      input.classList.remove("hint-out");
+      input.placeholder = hints[0];
+      start();
+    };
+
+    input.addEventListener("input", function () { if (input.value) stop(); else start(); });
     start();
   });
 
@@ -518,7 +533,9 @@
       if (open) {
         var menu = $("#m-menu");
         if (menu && !menu.hidden) { menu.hidden = true; var mb = $("[data-menu-btn]"); if (mb) mb.setAttribute("aria-expanded", "false"); }
-        $("input[type=search]", bar).focus();
+        var q = $("input[type=search]", bar);
+        if (q && q.restartHints) q.restartHints();
+        q.focus();
       }
     });
     bar.addEventListener("keydown", function (e) { if (e.key === "Escape") { close(); btn.focus(); } });
@@ -539,6 +556,22 @@
       if (bar.hidden) return;
       if (!e.target.closest("#m-search") && !e.target.closest("[data-search-btn]")) close();
     });
+  })();
+
+  /* The Rx mark beside the H1 explains itself on tap/click rather than
+     spending a whole chip on "Prescription required". */
+  (function () {
+    var btn = $("[data-rx-note]");
+    if (!btn) return;
+    function close() { btn.setAttribute("aria-expanded", "false"); }
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      btn.setAttribute("aria-expanded", btn.getAttribute("aria-expanded") === "true" ? "false" : "true");
+    });
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest || !e.target.closest("[data-rx-note]")) close();
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
   })();
 
   /* mobile hamburger -> the same primary nav links as the header */

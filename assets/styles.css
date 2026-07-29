@@ -1532,3 +1532,85 @@ body.sheet-open .mtools { display: none; }
   width: 100%; margin-top: 20px; height: 48px;
   font-size: 16px; font-weight: 600;
 }
+
+/* ============================================================
+   Hero compaction + card restyle                (round 19)
+   ============================================================ */
+
+/* Rx affordance beside the H1, replacing the "Prescription required" chip */
+.h1-rx {
+  display: inline-flex; align-items: center; justify-content: center;
+  vertical-align: middle; position: relative;
+  width: 30px; height: 30px; margin-left: 10px; padding: 0;
+  border: 0; border-radius: 7px; cursor: pointer;
+  background: var(--teal-600); color: #fff;
+}
+.h1-rx .rx-ico { width: 20px; height: 20px; }
+.h1-rx:hover { background: var(--teal-700); }
+.rx-note {
+  position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(-4px);
+  z-index: 40; width: max-content; max-width: 240px;
+  padding: 9px 12px; border-radius: 8px;
+  background: var(--fg-1); color: #fff;
+  font: 400 13px/18px var(--font); text-align: left; white-space: normal;
+  opacity: 0; visibility: hidden;
+  transition: opacity .14s, transform .14s, visibility 0s linear .14s;
+}
+.rx-note::before {
+  content: ""; position: absolute; bottom: 100%; left: 50%; margin-left: -5px;
+  border: 5px solid transparent; border-bottom-color: var(--fg-1);
+}
+.h1-rx[aria-expanded="true"] .rx-note {
+  opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+  transition: opacity .14s, transform .14s, visibility 0s;
+}
+
+/* One trust strip instead of three loose chips */
+.trust {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 14px; padding: 14px 18px;
+  /* an older hero rule puts a border on this slot; the strip is a fill, not a
+     bordered box, so clear it explicitly */
+  background: rgba(255,255,255,.66); border: 0; border-radius: 12px;
+}
+.trust-item { flex: 1; display: flex; align-items: center; gap: 12px; min-width: 0; }
+.trust-ico {
+  flex: none; display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: #fff; color: var(--fg-1);
+}
+.trust-tx { font-size: 13px; line-height: 19px; color: var(--fg-1); }
+
+/* phone: icon stacked over centred text, no surrounding box */
+@media (max-width: 767px) {
+  .trust { background: none; border: 0; padding: 6px 0 0; gap: 4px; margin-top: 10px; }
+  .trust-item { flex-direction: column; text-align: center; gap: 7px; }
+  .trust-ico { width: 38px; height: 38px; background: none; }
+  .trust-ico svg { width: 26px; height: 26px; }
+  .trust-tx { font-size: 12px; line-height: 17px; }
+  .h1-rx { width: 26px; height: 26px; margin-left: 8px; }
+  .h1-rx .rx-ico { width: 17px; height: 17px; }
+}
+
+/* Sort now lives in the filter rail */
+.side .sortwrap { display: block; margin-top: 2px; }
+.side .sortwrap select { width: 100%; height: 40px; font-size: 14px; font-weight: 400; }
+
+/* Add to cart: outlined, filling in only on hover — less wall-to-wall green.
+   Scoped to .med to outrank the earlier solid-green `.med .btn-add` rule. */
+.med .btn-add {
+  background: #fff; color: var(--teal-600);
+  border: 1.5px solid var(--teal-600);
+  transition: background .14s, color .14s, border-color .14s;
+}
+.med .btn-add:hover:not(:disabled) { background: var(--teal-600); border-color: var(--teal-600); color: #fff; }
+.med .btn-add:disabled { background: #fff; color: var(--fg-3); border-color: var(--line); }
+.med .btn-add.in-cart { background: #fff; color: var(--teal-600); border: 1.5px solid var(--teal-600); }
+.med .btn-add.in-cart:hover { background: var(--teal-600); color: #fff; }
+
+/* Back to top: icon only, same corner radius as the cards' buttons */
+.totop { gap: 0; padding: 0; width: 44px; height: 44px; border-radius: var(--r-md); }
+.totop svg { margin: 0; }
+
+/* dosage pills: softened, not lozenges */
+.form-pill { border-radius: var(--r-sm); }

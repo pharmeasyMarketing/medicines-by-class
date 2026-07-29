@@ -77,6 +77,10 @@ function md(src, { inline = false } = {}) {
   }).join("\n");
 }
 const lines = s => (s || "").split("\n").map(x => x.trim()).filter(Boolean);
+/** "USV PVT LTD" -> "Usv Pvt Ltd". CSS capitalize cannot do this: it only
+ *  uppercases first letters, it never lowercases what is already caps. */
+const titleCase = s => String(s).toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase());
+
 const rupee = n => "₹" + (Math.round(n * 100) / 100).toFixed(2).replace(/\.00$/, "");
 const slugify = s => s.toLowerCase().replace(/'/g, "")
   .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -349,7 +353,7 @@ const footer = () => {
     </div>
   </div>
 </footer>
-<button type="button" class="totop" aria-label="Back to top">${chev(16, 2.6, "6 14 12 8 18 14")}Back to top</button>`;
+<button type="button" class="totop" aria-label="Back to top" title="Back to top">${chev(18, 2.6, "6 14 12 8 18 14")}</button>`;
 };
 
 // credibility (reviewer / updated / policy) sits in the hero above the fold,
@@ -547,10 +551,8 @@ function medCard(m) {
   const href = `${CFG.origin}${CFG.pdpBase}/${m.slug}`;
 
   return `<article class="med" data-sku="${esc(m.sku)}" data-name="${esc(m.medicine_name)}" data-pack="${esc(m.pack_size)}" data-href="${esc(href)}" data-sub="${esc(m.sub_class)}" data-form="${esc(m.dosage_form)}" data-avail="${avail}" data-state="${esc((snap && snap.tierText) || "")}" data-subst="${subst}" data-ptype="${ptype}" data-rank="${esc(m.sort_rank)}" data-price="${hasPrice ? sale.toFixed(2) : ""}" data-off="${off}">
-      <span class="badge-rx${bool(m.rx_required) ? " is-rx" : ""}" title="${bool(m.rx_required) ? "Prescription required" : "Over the counter"}">${bool(m.rx_required) ? RX_GLYPH : "OTC"}</span>
       <a class="med-name" href="${esc(href)}">${esc(m.medicine_name)}</a>
-      ${m.manufacturer ? `<span class="med-by">By ${esc(m.manufacturer.toUpperCase())}</span>` : ""}
-      <span class="med-pack">${esc(m.pack_size)}</span>
+      ${m.manufacturer ? `<span class="med-by">By ${esc(titleCase(m.manufacturer))}</span>` : ""}
       <div class="med-foot">
         <span class="mrp"${off ? "" : " hidden"}>${isFinite(mrp) ? rupee(mrp) : ""}</span>
         <div class="price-row">
@@ -783,23 +785,21 @@ ${header()}
         <span class="chero-ico">${icon(cl.icon, 26, 1.9)}</span>
         <div class="chero-main">
           <div class="eyebrow-sm" style="color:${cat(cl.category)[1]}">${esc(cl.category || "Medicine class")}</div>
-          <h1>${esc(cl.h1_override || cl.class_name)}</h1>
+          <h1>${esc(cl.h1_override || cl.class_name)}${bool(cl.rx_required) ? `
+            <button type="button" class="h1-rx" data-rx-note aria-expanded="false"
+              aria-label="Why a prescription is needed">${RX_GLYPH}
+              <span class="rx-note" role="tooltip">The listed medicines require a prescription.</span>
+            </button>` : ""}</h1>
           <p class="chero-sub">${md(c.intro_md, { inline: true })}</p>
-          <div class="chero-meta">
-            <span>${total} medicines in this class</span>
-            <span class="dot"></span>
-            <span>Information for general awareness</span>
-            ${bool(cl.rx_required) ? '<span class="dot"></span><span class="pill-muted">Prescription required</span>' : ""}
-          </div>
           <div class="chero-cred">
             <span class="cred-by">${SHIELD}${reviewedBy(c)}</span>
             <span class="cred-sep"></span>
             <a href="${CFG.origin}/legal/editorial-policy">Editorial policy</a>
           </div>
-          <div class="chero-chips">
-            <span>${tick(15, 2.2)}100% genuine medicines</span>
-            <span class="chip-2l"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="7.5" width="13" height="9" rx="2"/><path d="M15.5 10.5h3.2l2.8 3v3h-6z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17.4" cy="18.5" r="1.6"/></svg><b>Same day delivery<i>on select cities</i></b></span>
-            <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.4l7 2.8v5c0 4.2-2.9 7.4-7 8.8-4.1-1.4-7-4.6-7-8.8v-5z"/><path d="M9.3 12h5.4"/><path d="M12 9.3v5.4"/></svg>NPPA Regulated</span>
+          <div class="trust">
+            <div class="trust-item"><span class="trust-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.4l7 2.8v5c0 4.2-2.9 7.4-7 8.8-4.1-1.4-7-4.6-7-8.8v-5z"/><polyline points="8.9 12.1 11.1 14.3 15.2 10.2"/></svg></span><span class="trust-tx">100% genuine<br>medicines</span></div>
+            <div class="trust-item"><span class="trust-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="7.5" width="13" height="9" rx="2"/><path d="M15.5 10.5h3.2l2.8 3v3h-6z"/><circle cx="7" cy="18.5" r="1.6"/><circle cx="17.4" cy="18.5" r="1.6"/></svg></span><span class="trust-tx">Same day delivery<br>on select cities</span></div>
+            <div class="trust-item"><span class="trust-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5l8-4.6 8 4.6"/><path d="M5.6 9.9v7.6M9.8 9.9v7.6M14.2 9.9v7.6M18.4 9.9v7.6"/><path d="M3.4 19.4h17.2"/></svg></span><span class="trust-tx">NPPA<br>Regulated</span></div>
           </div>
         </div>
       </div>
@@ -808,6 +808,15 @@ ${header()}
     <div class="class-grid">
       <aside class="side">
         <div class="side-top"><b>Filters</b><button type="button" class="side-clear" data-clear-filters>Clear all</button></div>
+        <hr><div class="side-h">Sort by</div>
+        <label class="sortwrap">
+          <select id="sort" aria-label="Sort medicines">
+            <option value="relevance">Popularity</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="discount">Discount</option>
+          </select>
+        </label>
         ${subs.length ? `<hr><div class="side-h">Sub-class</div>
         <div class="side-opts">${subs.map(([s, n]) => `<label><input type="checkbox" data-sub-filter value="${esc(s)}">${esc(s)} <span class="n">(${n})</span></label>`).join("")}</div>` : ""}
         <hr><div class="side-h">Dosage form</div>
@@ -824,30 +833,14 @@ ${header()}
       </aside>
 
       <div>
-        <div class="list-head">
-          <h2 class="list-title">Medicines in this class</h2>
-          <label class="sortwrap"><span>Sort By:</span>
-            <select id="sort" aria-label="Sort medicines">
-              <option value="relevance">Popularity</option>
-              <option value="price-asc">Price: low to high</option>
-              <option value="price-desc">Price: high to low</option>
-              <option value="discount">Discount</option>
-            </select>
-          </label>
-        </div>
-        <div class="toolbar">
-          <span class="sub" data-med-count>${total} medicines · prices include applicable discounts</span>
-          <div class="mtools">
+        <div class="mtools">
             <button type="button" class="mtool" data-sort-btn><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="10" y1="17" x2="14" y2="17"/></svg>Sort</button>
             <button type="button" class="mtool" data-filter-btn><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="6" x2="19" y2="6"/><circle cx="15" cy="6" r="2.2"/><line x1="5" y1="13" x2="19" y2="13"/><circle cx="9" cy="13" r="2.2"/><line x1="5" y1="20" x2="19" y2="20"/><circle cx="16" cy="20" r="2.2"/></svg>Filter</button>
-          </div>
         </div>
 
         <div class="med-grid" data-total="${total}" data-page-size="${CFG.perPage}">
           ${slice.map(medCard).join("\n          ")}
         </div>
-
-        <p class="grid-note">% OFF is calculated on the printed MRP. Prices are refreshed daily; the price charged at checkout is the one shown on the product page.</p>
 
         ${total > CFG.perPage ? `<div class="pager">
           <button type="button" class="btn-ghost" data-show-more>Show next ${CFG.perPage} medicines</button>
