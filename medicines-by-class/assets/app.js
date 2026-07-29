@@ -563,11 +563,32 @@
   (function () {
     var btn = $("[data-rx-note]");
     if (!btn) return;
+    var note = $(".rx-note", btn);
+
+    /* Anchored to the button, it ran off whichever screen edge the H1 sat
+       near. Position it fixed and clamp to the viewport instead. */
+    function place() {
+      if (!note) return;
+      note.style.left = "0px";
+      note.style.top = "0px";
+      var b = btn.getBoundingClientRect();
+      var w = Math.min(note.offsetWidth, window.innerWidth - 24);
+      note.style.width = w + "px";
+      var left = Math.min(Math.max(12, b.left + b.width / 2 - w / 2), window.innerWidth - w - 12);
+      var top = b.bottom + 8;
+      if (top + note.offsetHeight > window.innerHeight - 12) top = Math.max(12, b.top - note.offsetHeight - 8);
+      note.style.left = left + "px";
+      note.style.top = top + "px";
+    }
     function close() { btn.setAttribute("aria-expanded", "false"); }
     btn.addEventListener("click", function (e) {
       e.stopPropagation();
-      btn.setAttribute("aria-expanded", btn.getAttribute("aria-expanded") === "true" ? "false" : "true");
+      var open = btn.getAttribute("aria-expanded") !== "true";
+      btn.setAttribute("aria-expanded", String(open));
+      if (open) place();
     });
+    addEventListener("resize", function () { if (btn.getAttribute("aria-expanded") === "true") place(); });
+    addEventListener("scroll", close, { passive: true });
     document.addEventListener("click", function (e) {
       if (!e.target.closest || !e.target.closest("[data-rx-note]")) close();
     });
