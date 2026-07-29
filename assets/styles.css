@@ -1629,3 +1629,19 @@ body.sheet-open .mtools { display: none; }
   color: var(--fg-2); background: #fbfcfd;
 }
 .mhdr-menu a.m-kid:hover { text-decoration: none; color: var(--teal-700); background: #f2f5f7; }
+
+/* ============================================================
+   Mobile header, sized around a 38px logo      (round 21)
+   ============================================================ */
+@media (max-width: 767px) {
+  .mhdr-logo svg { height: 38px; }
+  .mhdr-logo img { height: 38px; }
+  /* the row has to clear the taller mark plus its optical padding */
+  .mhdr-row { height: 64px; padding: 0 12px; gap: 10px; }
+  /* icons grow a little so they do not look lost beside a 38px logo,
+     while staying inside the 44px minimum tap target */
+  .mhdr-btn { width: 44px; height: 44px; }
+  .mhdr-btn svg { width: 25px; height: 25px; }
+  .mhdr-search-btn svg { width: 24px; height: 24px; }
+  .mhdr-cart .cart-count { top: 2px; right: 2px; }
+}
