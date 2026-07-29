@@ -684,7 +684,7 @@ button { font-family: inherit; }
   .hero-sub { font-size: 14px; line-height: 22px; }
   .hero .field { height: 48px; margin-top: 16px; }
   .hero-cred { gap: 8px; }
-  .cred-sep { display: none; }
+
   .sec-head { flex-direction: column; align-items: flex-start; gap: 10px; }
   .az { padding: 14px 0 0; overflow-x: auto; flex-wrap: nowrap; }
   .groups { padding: 12px 0 0; background: none; border: 0; }
@@ -746,7 +746,7 @@ html, body { background: var(--bg); }
   .chero-sub { font-size: 14px; line-height: 22px; }
   .chero-meta { font-size: 13px; gap: 8px; margin-top: 12px; }
   .chero-cred { gap: 8px; margin-top: 14px; padding-top: 12px; }
-  .chero-cred .cred-sep { display: none; }
+
   .chero-chips { gap: 8px; }
   .chero-chips span { font-size: 12px; padding: 8px 12px; }
   .content-grid { padding: 0 16px; }
@@ -786,7 +786,7 @@ html, body { background: var(--bg); }
   .hero-note { font-size: 11px; line-height: 17px; margin-top: 10px; }
   .hero-cred, .chero-cred { margin-top: 14px; padding-top: 12px; gap: 6px 10px; }
   .cred-by, .cred-date, .hero-cred a, .chero-cred a { font-size: 12px; }
-  .cred-sep { display: none; }
+
   .chero-in { gap: 12px; }
   .chero-ico { width: 48px; height: 48px; border-width: 4px; }
   .chero-meta { font-size: 12px; gap: 8px; margin-top: 10px; }
@@ -1631,17 +1631,14 @@ body.sheet-open .mtools { display: none; }
 .mhdr-menu a.m-kid:hover { text-decoration: none; color: var(--teal-700); background: #f2f5f7; }
 
 /* ============================================================
-   Mobile header, sized around a 38px logo      (round 21)
+   Credibility line spacing                      (round 22)
    ============================================================ */
-@media (max-width: 767px) {
-  .mhdr-logo svg { height: 38px; }
-  .mhdr-logo img { height: 38px; }
-  /* the row has to clear the taller mark plus its optical padding */
-  .mhdr-row { height: 64px; padding: 0 12px; gap: 10px; }
-  /* icons grow a little so they do not look lost beside a 38px logo,
-     while staying inside the 44px minimum tap target */
-  .mhdr-btn { width: 44px; height: 44px; }
-  .mhdr-btn svg { width: 25px; height: 25px; }
-  .mhdr-search-btn svg { width: 24px; height: 24px; }
-  .mhdr-cart .cart-count { top: 2px; right: 2px; }
-}
+/* "Reviewed by" and the name are one phrase — the flex gap on .cred-by was
+   separating them as if they were siblings of the shield icon. */
+.cred-t { display: inline; }
+.cred-t b { font-weight: 700; }
+.cred-by { gap: 7px; }
+
+/* a rule between the reviewer and the policy link reads better than a space */
+.cred-sep { display: inline-block; width: 1px; height: 13px; background: rgba(0,136,128,.28); flex: none; }
+.hero-cred, .chero-cred { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
