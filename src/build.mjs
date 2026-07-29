@@ -245,13 +245,13 @@ const SHIELD = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stro
 /* "Reviewed by" stays the emphasised bit; the reviewer's own name is set light,
    and links to their profile when the sheet supplies one. */
 const reviewedBy = (c) => {
-  if (!c.reviewer_name) return `<b>${esc(CFG.reviewer)}</b>`;
+  if (!c.reviewer_name) return `<span class="cred-t"><b>${esc(CFG.reviewer)}</b></span>`;
   const who = esc(c.reviewer_name) + (c.reviewer_credentials ? ", " + esc(c.reviewer_credentials) : "");
   const url = (c.reviewer_profile_url || "").trim();
   const name = url
     ? `<a class="cred-name" href="${esc(url)}" rel="author">${who}</a>`
     : `<span class="cred-name">${who}</span>`;
-  return `<b>Reviewed by</b>&nbsp;${name}`;
+  return `<span class="cred-t"><b>Reviewed by</b> ${name}</span>`;
 };
 
 const M_ICON = {
