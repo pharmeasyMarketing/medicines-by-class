@@ -1644,3 +1644,23 @@ body.sheet-open .mtools { display: none; }
 /* a rule between the reviewer and the policy link reads better than a space */
 .cred-sep { display: inline-block; width: 1px; height: 13px; background: rgba(0,136,128,.28); flex: none; }
 .hero-cred, .chero-cred { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* ============================================================
+   Header rows share the page container          (round 23)
+   The header was full-bleed with 40px gutters, so the logo started at 40px
+   while the page content started at 144px. Same max-width and padding as
+   .container now, so the logo's left edge lines up with the breadcrumb,
+   hero and grid beneath it. The full-width rule under the header stays put,
+   since it sits on .hdr / .hdr-bar rather than these rows.
+   ============================================================ */
+.hdr-top,
+.hdr-bar > .hdr-nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+@media (max-width: 1180px) {
+  .hdr-top, .hdr-bar > .hdr-nav { padding-left: 24px; padding-right: 24px; }
+}
